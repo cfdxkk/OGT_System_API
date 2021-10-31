@@ -1,0 +1,24 @@
+# 数据源
+spring:
+  application:
+    name: OGT_System_mybatis_config
+  datasource:
+    url: jdbc:mysql://47.94.39.97:3306/OGT_System?serverTimezone=UTC
+    username: root
+    password: 88.Zxcvbnm88
+    driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      connection-timeout: 60000
+    dbcp2:
+      min-idle: 5                                # 数据库连接池的最小维持连接数
+      initial-size: 5                            # 初始化连接数
+      max-total: 5                               # 最大连接数
+      max-wait-millis: 150                       # 等待连接获取的最大超时时间
+
+
+# mybatis配置
+mybatis:
+  mapper-locations: classpath:mappers/*.xml    # mapper映射文件位置
+  type-aliases-package: entity    # 实体类所在的位置
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   #用于控制台打印sql语句
