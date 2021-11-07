@@ -27,6 +27,8 @@
   </properties>
 
   <dependencies>
+
+    <!-- junit单元测试-->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -40,26 +42,49 @@
       <artifactId>mybatis-spring-boot-starter</artifactId>
       <version>2.2.0</version>
     </dependency>
+
     <!-- mysql依赖 -->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
     </dependency>
 
+    <!-- Spring Boot 依赖管理 -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
+
     <!-- Spring Boot Web 依赖 -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web-services</artifactId>
     </dependency>
 
+    <!-- spring boot test-->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <!-- SpringBoot WebSocket -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
+
+    <!-- Security   セキュリティは重要です -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!-- Lombok  用于自动创建Get/Set方法 -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>
