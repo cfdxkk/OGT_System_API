@@ -32,7 +32,7 @@ public class UserController {
     @CrossOrigin
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.OK)
-    public String getByUUID(
+    public String createUser(
             @RequestParam(name = "username",required = false) String username,
             @RequestParam(name = "password",required = false) String password
     ){
@@ -52,4 +52,27 @@ public class UserController {
 
         return status;
     }
+
+    @CrossOrigin
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public String userLogin(
+            @RequestParam(name = "username",required = false) String username,
+            @RequestParam(name = "password",required = false) String password
+    ){
+        String token = "error password or unregister user";
+
+        System.out.println("username is: " + username);
+        System.out.println("password is: " + password);
+        UserInfoEntity userinfoentity = new UserInfoEntity();
+        userinfoentity.setUsername(username);
+
+        List<UserInfoEntity> userInfo = userinfoservice.getByUserInfoEntity(userinfoentity);
+        if (userInfo.get(0).getPassword().equals(password) ){
+            token = "right token";
+        }
+
+        return token;
+    }
+
 }

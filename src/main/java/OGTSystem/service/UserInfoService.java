@@ -17,4 +17,8 @@ public class UserInfoService {
     public List<UserInfoEntity> getByUUID(String uuid){
         return repository.getByUUID(uuid);
     }
+
+    public List<UserInfoEntity> getByUserInfoEntity (UserInfoEntity userinfoentity){
+        return repository.getByUserInfoEntity(userinfoentity);
+    }
 }

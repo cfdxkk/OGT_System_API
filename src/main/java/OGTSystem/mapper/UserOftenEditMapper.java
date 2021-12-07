@@ -10,6 +10,7 @@ import java.util.List;
 public interface UserOftenEditMapper {
 
     List<UserInfoEntity> selectByUUId(String uuid);
+    List<UserInfoEntity> getByUserInfoEntity(UserInfoEntity userinfoentity);
     int createUser(UserInfoEntity user);
 
 }

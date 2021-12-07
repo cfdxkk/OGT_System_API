@@ -33,7 +33,9 @@ public class UserToken {
         for (byte temp : bytes) {
             result.append(String.format("%02x", temp));
         }
-        return result.toString();
+        String token = "";
+        token = result.toString();
+        return token;
     }
 
 }

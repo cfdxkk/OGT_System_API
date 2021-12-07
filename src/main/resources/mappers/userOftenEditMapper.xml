@@ -5,6 +5,7 @@
     <!--设置domain类和数据库中表的字段一一对应，注意数据库字段和domain类中的字段名称不致，此处一定要！-->
     <resultMap id="BaseResultMap" type="OGTSystem.entity.UserInfoEntity">
         <result column="UID" property="UUID" jdbcType="VARCHAR" />
+        <result column="UUNO" property="UUNO" jdbcType="BIGINT" />
         <result column="username" property="username" jdbcType="VARCHAR" />
         <result column="password" property="password" jdbcType="VARCHAR" />
         <result column="privacy_auth" property="privacyAuth" jdbcType="VARCHAR" />
@@ -15,14 +16,32 @@
         <result column="user_birthday" property="userBirthday" jdbcType="DATE" />
         <result column="user_location" property="userLocation" jdbcType="VARCHAR" />
     </resultMap>
-    <!-- 查询单条记录 -->
+    <!-- 通过UUID查询单条或多条记录 -->
     <select id="selectByUUId" parameterType="String" resultMap="BaseResultMap">
         SELECT
-            UOE.UUID UID, username, password, privacy_auth, user_avatar, user_info,
+            UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info,
             user_email, user_sex, user_birthday, user_location
         FROM user_often_edit UOE left join user_not_often_edit UNOE ON UOE.UUID = UNOE.UUID
         <if test="uuid != null">
             WHERE UOE.UUID = #{uuid}
+        </if>
+    </select>
+
+    <!-- 通过UserInfoEntity查询单条或多条记录 -->
+    <select id="getByUserInfoEntity" resultMap="BaseResultMap">
+        SELECT
+        UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info,
+        user_email, user_sex, user_birthday, user_location
+        FROM user_often_edit UOE left join user_not_often_edit UNOE ON UOE.UUID = UNOE.UUID
+        WHERE 1 = 1
+        <if test="UUID != null">
+            AND UOE.UUID = #{UUID}
+        </if>
+        <if test="UUNO != null">
+            AND UOE.UUNO = #{UUNO}
+        </if>
+        <if test="username != null">
+            AND username = #{username}
         </if>
     </select>
 

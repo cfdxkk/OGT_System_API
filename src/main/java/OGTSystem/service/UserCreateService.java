@@ -6,6 +6,7 @@ import OGTSystem.repository.UserCreateRepository;
 import OGTSystem.util.UserToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
 @Service
@@ -13,22 +14,34 @@ public class UserCreateService {
     @Autowired
     UserCreateRepository repository;
 
+    @Autowired
+    UserInfoService userinfoservice;
+
     public int createUser(String username, String password){
 
+        UserInfoEntity userinfoentity = new UserInfoEntity();
+        UserAuthEntity userauthentity = new UserAuthEntity();
+
+        // uuid gen
         String uuid = "";
-        uuid = UUID.randomUUID().toString().replaceAll("-", "");;
-        System.out.println("uuid is: " + uuid);
-        if ( uuid == ""){
+        uuid = UUID.randomUUID().toString().replaceAll("-", "");
+
+        // token gen
+        UserToken usertoken = new UserToken();
+        String token = usertoken.gen();
+
+        // check
+        if ( uuid == "" || token == ""){
             return 0;
         }
-        UserInfoEntity userinfoentity = new UserInfoEntity();
+
         userinfoentity.setUUID(uuid);
         userinfoentity.setUsername(username);
         userinfoentity.setPassword(password);
-        UserAuthEntity userauthentity = new UserAuthEntity();
-        UserToken usertoken = new UserToken();
+
         userauthentity.setUUID(uuid);
-        userauthentity.setUserToken(usertoken.gen());
+        userauthentity.setUserToken(token);
+
         return repository.createUser(userinfoentity,userauthentity);
     }
 }

@@ -14,7 +14,10 @@ public class UserInfoRepository {
     UserOftenEditMapper mapper;
 
     public List<UserInfoEntity> getByUUID(String uuid){
-
         return mapper.selectByUUId(uuid);
+    }
+
+    public List<UserInfoEntity> getByUserInfoEntity(UserInfoEntity userinfoentity){
+        return mapper.getByUserInfoEntity(userinfoentity);
     }
 }
