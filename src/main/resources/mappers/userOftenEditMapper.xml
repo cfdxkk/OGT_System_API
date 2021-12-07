@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="OGTSystem.mapper.userOftenEditMapper">
+<mapper namespace="OGTSystem.mapper.UserOftenEditMapper">
     <!--设置domain类和数据库中表的字段一一对应，注意数据库字段和domain类中的字段名称不致，此处一定要！-->
-    <resultMap id="BaseResultMap" type="OGTSystem.entity.userInfoEntity">
+    <resultMap id="BaseResultMap" type="OGTSystem.entity.UserInfoEntity">
         <result column="UID" property="UUID" jdbcType="VARCHAR" />
         <result column="username" property="username" jdbcType="VARCHAR" />
         <result column="password" property="password" jdbcType="VARCHAR" />
@@ -25,4 +25,9 @@
             WHERE UOE.UUID = #{uuid}
         </if>
     </select>
+
+    <insert id="createUser">
+        insert into user_often_edit(UUID, username, password)
+        value(#{UUID,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR});
+    </insert>
 </mapper>

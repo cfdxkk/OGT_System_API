@@ -1,38 +1,23 @@
 package OGTSystem.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import OGTSystem.model.webSocketMessageEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Controller
 @ServerEndpoint(value = "/websocket/{id}")
-public class UserinfoWebSocketController {
+public class UserInfoWebSocketController {
 
     //在线连接数,应该把它设计成线程安全的
     private static int onlineCount = 0;
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     //虽然@Component默认是单例模式的，但springboot还是会为每个websocket连接初始化一个bean，所以可以用一个静态set保存起来。
-    public static CopyOnWriteArraySet<UserinfoWebSocketController> websocketServerSet
+    public static CopyOnWriteArraySet<UserInfoWebSocketController> websocketServerSet
             = new CopyOnWriteArraySet<>();
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
@@ -88,7 +73,7 @@ public class UserinfoWebSocketController {
         System.out.println("push 接收到窗口：" + id + " 的信息：" + message);
 
         //发送信息
-        for (UserinfoWebSocketController endpoint : websocketServerSet) {
+        for (UserInfoWebSocketController endpoint : websocketServerSet) {
             try {
                 endpoint.sendMessage(session,"pull 接收到窗口：" + id + " 的信息：" + message);
             } catch (Exception e) {
@@ -126,7 +111,7 @@ public class UserinfoWebSocketController {
     }
 
     private void subOnLineCount() {
-        UserinfoWebSocketController.onlineCount--;
+        UserInfoWebSocketController.onlineCount--;
     }
 
     public static synchronized int getOnlineCount() {
@@ -134,7 +119,7 @@ public class UserinfoWebSocketController {
     }
 
     private void addOnlineCount() {
-        UserinfoWebSocketController.onlineCount++;
+        UserInfoWebSocketController.onlineCount++;
     }
 
 }

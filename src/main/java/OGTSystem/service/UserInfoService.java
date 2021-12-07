@@ -1,23 +1,20 @@
 package OGTSystem.service;
 
-import OGTSystem.repository.userInfoRepository;
+import OGTSystem.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import OGTSystem.entity.userInfoEntity;
+import OGTSystem.entity.UserInfoEntity;
 
 import java.util.List;
 
 @Service
-public class userInfoService {
+public class UserInfoService {
 
     @Autowired
-    userInfoRepository repository;
+    UserInfoRepository repository;
 
-    public List<userInfoEntity> getByUUID(String uuid){
+    public List<UserInfoEntity> getByUUID(String uuid){
         return repository.getByUUID(uuid);
     }
-
-
-
 }

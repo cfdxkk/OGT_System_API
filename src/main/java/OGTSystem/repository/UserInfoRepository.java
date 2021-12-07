@@ -1,19 +1,19 @@
 package OGTSystem.repository;
 
-import OGTSystem.entity.userInfoEntity;
-import OGTSystem.mapper.userOftenEditMapper;
+import OGTSystem.entity.UserInfoEntity;
+import OGTSystem.mapper.UserOftenEditMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public class userInfoRepository {
+public class UserInfoRepository {
 
     @Autowired
-    userOftenEditMapper mapper;
+    UserOftenEditMapper mapper;
 
-    public List<userInfoEntity> getByUUID(String uuid){
+    public List<UserInfoEntity> getByUUID(String uuid){
 
         return mapper.selectByUUId(uuid);
     }
