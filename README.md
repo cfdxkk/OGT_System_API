@@ -19,9 +19,9 @@ OGT系统是用来与好友预定游戏时间，或由队长来策划并发布�
         * `username` + `token`  传递username和token，用于打开一个带token的WebSocket会话 (后端接收到token后会进行验证)
 
 ### 启动方法
-1. 根据自己的实际情况修改连接的数据库，方法：修改在 `src/main/resources/application.yml` 文件中的 `url` `username` 和 `password`参数（如果使用的不是MySQL，则需要修改`driver-class-name` 参数，当然，你也可以修改其他属性让本系统让其更贴合你的需求的方式运行）
+1. 根据自己的实际情况修改连接的数据库，方法：修改在 `src/main/resources/application.yml` 文件中的 `url` `username` 和 `password`参数（如果使用的不是MySQL，则需要修改`driver-class-name` 参数，当然，你也可以修改其他属性让本系统以更贴合你的实际需求的方式运行）
 2. 打开终端并定位到正确的目录 (pom.xml所在的目录)
-3. 输入下方命令检查maven是否正确安装，如果没安装清自行安装maven
+3. 输入下方命令检查Maven是否正确安装，如果没安装清自行安装[maven](https://github.com/apache/maven)
 ```
 mvn -v
 ```
