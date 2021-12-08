@@ -79,7 +79,7 @@ public class UserInfoWebSocketController {
         //发送信息
         for (UserInfoWebSocketController endpoint : websocketServerSet) {
             try {
-                endpoint.sendMessage(session,"pull 接收到窗口：" + username + " 的信息：" + message);
+                endpoint.sendMessage(endpoint.session,"pull 接收到窗口：" + endpoint.username + " 的信息：" + message);
             } catch (Exception e) {
                 e.printStackTrace();
             }
