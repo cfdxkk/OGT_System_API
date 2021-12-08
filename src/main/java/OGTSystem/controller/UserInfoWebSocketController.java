@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Controller
-@ServerEndpoint(value = "/websocket/{id}")
+@ServerEndpoint(value = "/websocket/{username}/{token}")
 public class UserInfoWebSocketController {
 
     //在线连接数,应该把它设计成线程安全的
@@ -23,25 +23,29 @@ public class UserInfoWebSocketController {
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
-    //会话窗口的ID标识
-    private String id = "";
+    //会话窗口的username标识
+    private String username = "";
 
 
     /**
      * 链接成功调用的方法
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam("id") String id) {
+    public void onOpen(
+            Session session,
+            @PathParam("username") String username,
+            @PathParam("token") String token
+    ) {
         System.out.println("onOpen >> 链接成功");
         this.session = session;
         //将当前websocket对象存入到Set集合中
         websocketServerSet.add(this);
         //在线人数+1
         addOnlineCount();
-        System.out.println("有新窗口开始监听：" + id + ", 当前在线人数为：" + getOnlineCount());
-        this.id = id;
+        System.out.println("有新窗口开始监听：" + username + ", 用户token是： " + token + ", 当前在线人数为：" + getOnlineCount());
+        this.username = username;
         try {
-            sendMessage(session,"有新窗口开始监听：" + id + ", 当前在线人数为：" + getOnlineCount());
+            sendMessage(session,"有新窗口开始监听：" + username + ", 用户token是： " + token + ", 当前在线人数为：" + getOnlineCount());
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -70,12 +74,12 @@ public class UserInfoWebSocketController {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.out.println("push 接收到窗口：" + id + " 的信息：" + message);
+        System.out.println("push 接收到窗口：" + username + " 的信息：" + message);
 
         //发送信息
         for (UserInfoWebSocketController endpoint : websocketServerSet) {
             try {
-                endpoint.sendMessage(session,"pull 接收到窗口：" + id + " 的信息：" + message);
+                endpoint.sendMessage(session,"pull 接收到窗口：" + username + " 的信息：" + message);
             } catch (Exception e) {
                 e.printStackTrace();
             }

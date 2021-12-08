@@ -14,6 +14,6 @@ public class UserAuthEntity {
     // 用户token
     private String userToken;
     // 用户违规次数
-    private String userAttackTime;
+    private int userAttackTime;
 
 }

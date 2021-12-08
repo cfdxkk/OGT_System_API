@@ -1,6 +1,7 @@
 package OGTSystem.controller;
 
 import OGTSystem.entity.UserInfoEntity;
+import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserCreateService;
 import OGTSystem.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class UserController {
 
     @Autowired
     UserCreateService usercreateservice;
+
+    @Autowired
+    UserAuthService userauthservice;
 
     @CrossOrigin
     @GetMapping("/info")
@@ -60,16 +64,14 @@ public class UserController {
             @RequestParam(name = "username",required = false) String username,
             @RequestParam(name = "password",required = false) String password
     ){
-        String token = "error password or unregister user";
+        String token = "error password or unregister user"; // 默认token，密码错误或用户未注册
 
-        System.out.println("username is: " + username);
-        System.out.println("password is: " + password);
         UserInfoEntity userinfoentity = new UserInfoEntity();
         userinfoentity.setUsername(username);
 
-        List<UserInfoEntity> userInfo = userinfoservice.getByUserInfoEntity(userinfoentity);
-        if (userInfo.get(0).getPassword().equals(password) ){
-            token = "right token";
+        List<UserInfoEntity> userInfo = userinfoservice.getByUserInfoEntity(userinfoentity); // 根据用户名获取信息
+        if (userInfo.get(0).getPassword().equals(password) ){ // 根据获取的用户信息与用户输入的密码比对，看看是否一致
+            token = userauthservice.getUserTokenByUserInfoEntity(userInfo.get(0)).get(0).getUserToken(); // 从数据库查询这个用户的tocken
         }
 
         return token;
