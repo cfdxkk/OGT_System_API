@@ -17,4 +17,15 @@ public class UserAuthService {
     public List<UserAuthEntity> getUserTokenByUserInfoEntity(UserInfoEntity userinfoentity){
         return userauthinforepository.getUserTokenByUserInfoEntity(userinfoentity);
     }
+
+    public boolean userAuthCheck(String uuid, String token){
+        boolean flag = false;
+        UserInfoEntity userinfoentity = new UserInfoEntity();
+        userinfoentity.setUUID(uuid);
+        List<UserAuthEntity> userauthinfo = userauthinforepository.getUserTokenByUserInfoEntity(userinfoentity);
+        if(userauthinfo.get(0).getUserToken().equals(token)){
+            flag = true;
+        }
+        return  flag;
+    }
 }

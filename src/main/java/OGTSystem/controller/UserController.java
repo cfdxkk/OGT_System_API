@@ -1,5 +1,6 @@
 package OGTSystem.controller;
 
+import OGTSystem.entity.UserAuthEntity;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserCreateService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -69,12 +71,55 @@ public class UserController {
         UserInfoEntity userinfoentity = new UserInfoEntity();
         userinfoentity.setUsername(username);
 
-        List<UserInfoEntity> userInfo = userinfoservice.getByUserInfoEntity(userinfoentity); // 根据用户名获取信息
-        if (userInfo.get(0).getPassword().equals(password) ){ // 根据获取的用户信息与用户输入的密码比对，看看是否一致
-            token = userauthservice.getUserTokenByUserInfoEntity(userInfo.get(0)).get(0).getUserToken(); // 从数据库查询这个用户的tocken
+        List<UserInfoEntity> userinfo = userinfoservice.getByUserInfoEntity(userinfoentity); // 根据用户名获取信息
+        List<UserAuthEntity> userauthinfo = userauthservice.getUserTokenByUserInfoEntity(userinfo.get(0));
+        if (userinfo.get(0).getPassword().equals(password) ){ // 根据获取的用户信息与用户输入的密码比对，看看是否一致
+            token = userauthinfo.get(0).getUUID()+"-"+userauthinfo.get(0).getUserToken(); // 从数据库查询这个用户的uuid和tocken
         }
-
         return token;
     }
+
+
+    @CrossOrigin
+    @GetMapping("/testUserMap")
+    @ResponseStatus(HttpStatus.OK)
+    public String testUserMap(
+            @RequestParam(name = "uuno",required = false) long uuno
+    ){
+        System.out.println("uuno is: " + uuno);
+        System.out.println("start set");
+        HashMap usermap = new HashMap();
+        for (long i = 0; i<100000000; i++){
+            usermap.put(i,i);
+        }
+        System.out.println("end set");
+
+        long startTime=System.nanoTime();   //获取开始时间
+        System.out.println("start find");
+        System.out.println("user is: " + usermap.get(uuno));
+        System.out.println("end find");
+        long endTime=System.nanoTime(); //获取结束时间
+        System.out.println("程序运行时间： "+(endTime-startTime)+"ns");
+
+        return "right";
+    }
+
+    @CrossOrigin
+    @GetMapping("/httpSentWsMessage")
+    @ResponseStatus(HttpStatus.OK)
+    public String httpSentWsMessage(
+            @RequestParam(name = "message",required = false) String message
+    ){
+        System.out.println("uuno is: " + message);
+
+        UserInfoWebSocketController sentWs = new UserInfoWebSocketController();
+        sentWs.onMessage(message);
+
+        return "message is: "+message;
+    }
+
+
+
+
 
 }

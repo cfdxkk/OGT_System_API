@@ -1,7 +1,10 @@
 package OGTSystem.controller;
 
+import OGTSystem.service.UserAuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -9,8 +12,16 @@ import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Controller
-@ServerEndpoint(value = "/websocket/{username}/{token}")
+@ServerEndpoint(value = "/websocket/{username}/{uuid}/{token}")
 public class UserInfoWebSocketController {
+
+
+    private static UserAuthService userauthservice;
+
+    @Autowired
+    public void setUserauthservice(UserAuthService userauthservice){
+        UserInfoWebSocketController.userauthservice = userauthservice;
+    }
 
     //在线连接数,应该把它设计成线程安全的
     private static int onlineCount = 0;
@@ -34,20 +45,32 @@ public class UserInfoWebSocketController {
     public void onOpen(
             Session session,
             @PathParam("username") String username,
+            @PathParam("uuid") String uuid,
             @PathParam("token") String token
     ) {
-        System.out.println("onOpen >> 链接成功");
-        this.session = session;
-        //将当前websocket对象存入到Set集合中
-        websocketServerSet.add(this);
-        //在线人数+1
-        addOnlineCount();
-        System.out.println("有新窗口开始监听：" + username + ", 用户token是： " + token + ", 当前在线人数为：" + getOnlineCount());
-        this.username = username;
-        try {
-            sendMessage(session,"有新窗口开始监听：" + username + ", 用户token是： " + token + ", 当前在线人数为：" + getOnlineCount());
-        } catch (Exception e) {
-            System.out.println(e.toString());
+        System.out.println("-----------------------------------------");
+        System.out.println("username is: "+username);
+        System.out.println("uuid is: "+uuid);
+        System.out.println("token is: "+ token);
+        System.out.println("-----------------------------------------");
+
+//        UserAuthService userauthservice = new UserAuthService();
+        if(userauthservice.userAuthCheck(uuid,token)){
+            System.out.println("onOpen >> 链接成功");
+            this.session = session;
+            //将当前websocket对象存入到Set集合中
+            websocketServerSet.add(this);
+            //在线人数+1
+            addOnlineCount();
+            System.out.println("有新窗口开始监听：" + username + ", 用户token是： " + token + ", 当前在线人数为：" + getOnlineCount());
+            this.username = username;
+            try {
+                sendMessage(session,"有新窗口开始监听：" + username + ", 用户token是： " + token + ", 当前在线人数为：" + getOnlineCount());
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
+        } else {
+            System.out.println("注意：可能有人正在利用websocket接口攻击服务器！");
         }
     }
 
@@ -72,8 +95,22 @@ public class UserInfoWebSocketController {
      * @param message
      * @param session
      */
+//    @OnMessage
+//    public void onMessage(String message, Session session) {
+//        System.out.println("push 接收到窗口：" + username + " 的信息：" + message);
+//
+//        //发送信息
+//        for (UserInfoWebSocketController endpoint : websocketServerSet) {
+//            try {
+//                endpoint.sendMessage(endpoint.session,"pull 接收到窗口：" + endpoint.username + " 的信息：" + message);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message) {
         System.out.println("push 接收到窗口：" + username + " 的信息：" + message);
 
         //发送信息
