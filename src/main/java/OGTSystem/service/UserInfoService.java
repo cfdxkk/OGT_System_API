@@ -21,4 +21,12 @@ public class UserInfoService {
     public List<UserInfoEntity> getByUserInfoEntity (UserInfoEntity userinfoentity){
         return repository.getByUserInfoEntity(userinfoentity);
     }
+
+    public int setUserWebSocketServiceInfo (String UUID, String wsStatus, String userWsServer){
+        UserInfoEntity userinfoentity = new UserInfoEntity();
+        userinfoentity.setUUID(UUID);
+        userinfoentity.setWsStatus(wsStatus);
+        userinfoentity.setUserWsServer(userWsServer);
+        return repository.setUserWebSocketServiceInfo(userinfoentity);
+    }
 }

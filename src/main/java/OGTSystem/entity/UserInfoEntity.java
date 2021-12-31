@@ -22,6 +22,10 @@ public class UserInfoEntity {
     private String userAvatar;
     // 用户个人简介
     private String userInfo;
+    // 用户ws连接状态
+    private String wsStatus;
+    // 用户ws地址
+    private String userWsServer;
 
     // user_not_often_edit table
     // 用户邮箱

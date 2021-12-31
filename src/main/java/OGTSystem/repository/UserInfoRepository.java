@@ -20,4 +20,8 @@ public class UserInfoRepository {
     public List<UserInfoEntity> getByUserInfoEntity(UserInfoEntity userinfoentity){
         return mapper.getByUserInfoEntity(userinfoentity);
     }
+
+    public int setUserWebSocketServiceInfo(UserInfoEntity userinfoentity){
+        return mapper.setUserWebSocketServiceInfo(userinfoentity);
+    }
 }
