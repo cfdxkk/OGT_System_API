@@ -175,9 +175,8 @@ public class UserInfoWebSocketController {
 //    }
 
     @OnMessage
-    public String onMessage(String message) {
+    public void onMessage(String message) {
         System.out.println("push 接收到窗口：" + username + " 的信息：" + message);
-
         //发送信息
         for (UserInfoWebSocketController endpoint : websocketServerSet) {
             try {
@@ -186,7 +185,6 @@ public class UserInfoWebSocketController {
                 e.printStackTrace();
             }
         }
-        return "message sanded";
     }
 
     /**
@@ -201,6 +199,44 @@ public class UserInfoWebSocketController {
         e.printStackTrace();
     }
 
+    /**
+     *
+     * 遍历set，找到目标用户是否连接在当前服务器set中，如果在则发送消息并return成功，如果不在则return不在，如果发送失败就return失败
+     *
+     * @param uuidFrom 消息来源
+     * @param uuidTo 消息目标
+     * @param messageType 消息类型
+     * @param message 消息体
+     * @param messageNo 消息顺序号
+     * @param messageInfo 预留字段
+     * @return
+     */
+    public String sendMessage2User(String uuidFrom, String uuidTo, String messageType, String message, double messageNo, String... messageInfo){
+
+        int connectNumber = websocketServerSet.size();
+        int count = 0;
+
+        for (UserInfoWebSocketController endpoint : websocketServerSet){
+
+            count++;
+            if (endpoint.uuid.equals(uuidTo) || endpoint.uuid == uuidTo){
+                System.out.println("匹配到目标用户: " + uuid);
+                try {
+                    endpoint.sendMessage(endpoint.session,"接收到用户: " + uuidFrom + " 发给你的 " + messageType + " 类信息: [" + message + "] 消息顺序号为: " + messageNo);
+                    return "消息发送成功";
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "消息发送失败";
+                }
+            }
+            if (count == connectNumber){
+                return "在本服务器上未找到目标用户";
+            }
+        }
+
+        return "未知错误，发送失败";
+
+    }
 
     /**
      * 推送消息
