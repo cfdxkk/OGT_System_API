@@ -1,6 +1,5 @@
 package OGTSystem.controller;
 
-import OGTSystem.entity.UserAuthEntity;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserCreateService;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
