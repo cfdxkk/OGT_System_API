@@ -1,0 +1,227 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>My WebSocket</title>
+    <style>
+        #registerPart{
+            background-color: salmon;
+        }
+        #loginPart{
+            background-color: powderblue;
+
+            margin-top: 20px;
+        }
+        #wsPart{
+            background-color: pink;
+
+            margin-top: 20px;
+        }
+        #wsMessageSentPart{
+            background-color: khaki;
+
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h2>Welcome</h2>
+
+    <button onclick="select()">测试数据</button>
+
+    <div id="registerPart">
+        <p>here we test register</p>
+        账号：<input id="registerUserName" type="text" />
+        <br/>
+        密码：<input id="registerPassword" type="text" />
+        <br/>
+        <button onclick="register()">注册</button>
+        <div id="registerMessage"></div>
+    </div>
+
+    <div id="loginPart">
+        <p>here we test login</p>
+        账号：<input id="loginUserName" type="text" />
+        <br/>
+        密码：<input id="loginPassword" type="text" />
+        <br/>
+        <button onclick="login()">登录</button>
+        <div id="loginMessage"></div>
+        <div id="usernameBox"></div>
+    </div>
+
+    <div id="wsPart">
+        <p>here we test ws</p>
+        <input id="text" type="text" />
+        <br/>
+        <button onclick="connect()">connect</button>
+        <button onclick="send()">Send</button>
+        <button onclick="closeWebSocket()">Close</button>
+        <div id="wsMessage"></div>
+    </div>
+
+    <div id="wsMessageSentPart">
+        <p>here we test ws sent message to user 精准的消息推</p>
+        目标用户ID：<input style="margin-left: 10px;" id="uuidTo" type="text" />
+        <br/>
+        目标用户NO：<input style="margin-left: 1px;" id="uunoTo" type="text" />
+        <br/>
+        消息类型：<input style="margin-left: 27px;" id="wsmessagetype" type="text" />
+        <br/>
+        消息：<input style="margin-left: 59px;" id="wsmessage" type="text" />
+        <br/>
+        <button onclick="sendMessage2User()">Send</button>
+        <div id="wsMessage"></div>
+    </div>
+
+</body>
+
+<script type="text/javascript">
+    
+    let websocket = null
+    let wsURL = "ws://localhost:8080/websocket/"
+
+    function connect() {
+        //判断当前浏览器是否支持WebSocket
+        if('WebSocket' in window){
+            console.log('当前浏览器支持websocket')
+            let cookieArray = (document.cookie.split('=')[1]).split('-');
+            let wsUsername = cookieArray[0]
+            let wsUUID = cookieArray[1]
+            let wsToken = cookieArray[2]
+            
+            wsURL = `${wsURL}${wsUsername}/${wsUUID}/${wsToken}`
+            console.log('wsurl', wsURL)
+            websocket = new WebSocket(wsURL);
+            
+            //连接发生错误的回调方法
+            websocket.onerror = function(){
+                setMessageInnerHTML("error");
+            }
+            //连接成功建立的回调方法
+            websocket.onopen = function(event){
+                setMessageInnerHTML("open");
+            }
+            //接收到消息的回调方法
+            websocket.onmessage = event => {
+                console.log("============= message back =============")
+                setMessageInnerHTML(event.data);
+            }
+            //连接关闭的回调方法
+            websocket.onclose = function(){
+                setMessageInnerHTML("close");
+                wsURL = "ws://localhost:8080/websocket/"
+            }
+        }
+        else{
+            alert('Not support websocket')
+        }
+    }
+    
+    //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+    window.onbeforeunload = function(){
+        websocket.close();
+    }
+    //将消息显示在网页上
+    function setMessageInnerHTML(innerHTML){
+        console.log('——————————————————————————————————————————')
+        console.log(innerHTML)
+        console.log('——————————————————————————————————————————')
+        document.getElementById('wsMessage').innerHTML += innerHTML + '<br/>';
+    }
+    //关闭连接
+    function closeWebSocket(){
+        websocket.close();
+    }
+    //发送消息
+    function send(){
+        var message = document.getElementById('text').value;
+        websocket.send(message);
+    }
+
+    //向目标用户精准发送消息
+    const sendMessageUrl = "http://localhost:8080/message/sentmessage2user"
+    function sendMessage2User(){
+
+        // 获取输入和cookie中的数据
+        let cookieArray = (document.cookie.split('=')[1]).split('-');
+        
+        let uuidfrom = cookieArray[1]
+        let uuidto = document.getElementById('uuidTo').value;
+        let uunoto = document.getElementById('uunoTo').value;
+        let token = cookieArray[2]
+        let messagetype = document.getElementById('wsmessagetype').value;
+        let message = document.getElementById('wsmessage').value;
+
+        // 拼接数据对象
+        let messageData = {
+            uuidfrom,
+            uuidto,
+            uunoto,
+            token,
+            messagetype,
+            message
+        }
+
+        // post
+        $.post(sendMessageUrl,messageData,(data,status)=>{
+            console.log('http post status', status)
+            console.log('消息发送结果: ', data)
+        })
+
+    }
+</script>
+
+
+
+
+<script>
+    const registerURL = "http://localhost:8080/user/register"
+    const loginURL = "http://localhost:8080/user/login"
+    
+    function register(){
+
+        let username = document.getElementById('registerUserName').value
+        let password = document.getElementById('registerPassword').value
+
+        let registerData = {
+            username,
+            password
+        }
+
+        $.post(registerURL,registerData,(data,status)=>{
+            console.log('request status', status)
+            console.log('register status', data)
+        })
+    }
+
+    function login(){
+
+        let username = document.getElementById('loginUserName').value
+        let password = document.getElementById('loginPassword').value
+
+        let loginData = {
+            username,
+            password
+        }
+
+        $.post(loginURL,loginData,(data,status)=>{
+            console.log('login status', status)
+            console.log('login data', data)
+            document.getElementById('usernameBox').innerHTML = username
+            let cookieStr = "userinfo="+username+"-"+data+"; expires=Thu, 18 Dec 2043 12:00:00 GMT"
+            document.cookie=cookieStr;
+            console.log('cookie',document.cookie)
+        })
+    }
+
+
+    const selectURL = "http://localhost:8080/user/info"
+    function select(){
+        $.get(selectURL, (data,status)=>{
+            console.log(data);
+        })
+    }
+</script>
+</html>
