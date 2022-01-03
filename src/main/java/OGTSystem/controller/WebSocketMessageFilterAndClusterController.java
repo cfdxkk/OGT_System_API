@@ -95,7 +95,7 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
             for(String wsServerAddress: WebSocketMessageFilterAndClusterController.wsServerAddressMap.keySet()){
 
                 // 3.1 拼接请求参数
-                String messageUrl = "http://" + wsServerAddress + ":8080/wsserver/sentmessage2user";
+                String messageUrl = "http://" + wsServerAddress + ":8888/wsserver/sentmessage2user";
                 URIBuilder urlbuilder = new URIBuilder(messageUrl);
                 urlbuilder.setParameter("uuidfrom",uuidFrom);
                 urlbuilder.setParameter("uuidto",uuidTo);
@@ -117,7 +117,6 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
 
             }
 
-
             while (true){
 
                 System.out.println("messageSentFlag is: " + WebSocketMessageFilterAndClusterController.messageSentFlag);
@@ -134,7 +133,6 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
 
             }
 
-
         } catch (Exception e){
             System.out.println(e);
 
@@ -145,10 +143,6 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
         System.out.println("消息发送失败[未知原因]");
         return "消息发送失败[未知原因]";
     }
-
-
-
-
 
     public void failed(final Exception ex) {
         System.out.println(ex.getLocalizedMessage());
@@ -191,11 +185,6 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
     public void cancelled() {
         System.out.println("cancelled");
     }
-
-
-
-
-
 }
 
 
