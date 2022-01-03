@@ -85,7 +85,7 @@ public class WebSocketController {
             //将当前websocket对象存入到Set集合中
             websocketServerSet.add(this);
 
-            // 获取当前服务器的IP地址,组合成服务器URL
+            // 获取当前服务器的IP地址
             String localhostIpAddress = "";
             try {
                 InetAddress inetaddress = InetAddress.getLocalHost();
@@ -127,22 +127,21 @@ public class WebSocketController {
 
 
 
-        // 获取当前服务器的IP地址,组合成服务器URL
-        String serverUrl = "";
+        // 获取当前服务器的IP地址
+        String localhostIpAddress = "";
         try {
             InetAddress inetaddress = InetAddress.getLocalHost();
-            String localhostIpAddress = inetaddress.getHostAddress();
-            serverUrl = "ws://"+localhostIpAddress+":8080/websocket";
+            localhostIpAddress = inetaddress.getHostAddress();
 
         } catch (Exception e){
             System.out.println(e);
         }
 
         //在当前用户信息表中，修改该用户连接的ws服务器连接状态记录为断开连接: 0，并记录用户连接的ws服务器地址
-        userinfoservice.setUserWebSocketServiceInfo(uuid,"0",serverUrl);
+        userinfoservice.setUserWebSocketServiceInfo(uuid,"0",localhostIpAddress);
 
         // 在服务器记录中给服务器在线人数+1
-        wsserverinfoservice.wsServerConnectNumberSubOne(serverUrl);
+        wsserverinfoservice.wsServerConnectNumberSubOne(localhostIpAddress);
 
         // 移除当前Websocket对象
         websocketServerSet.remove(this);
@@ -215,13 +214,13 @@ public class WebSocketController {
         int connectNumber = websocketServerSet.size();
         int count = 0;
 
-        for (WebSocketController endpoint : websocketServerSet){
+        for (WebSocketController websocketServer : websocketServerSet){
 
             count++;
-            if (endpoint.uuid.equals(uuidTo) || endpoint.uuid == uuidTo){
-                System.out.println("匹配到目标用户: " + uuid);
+            if (websocketServer.uuid.equals(uuidTo) || websocketServer.uuid == uuidTo){
+                System.out.println("匹配到目标用户: " + websocketServer.uuid);
                 try {
-                    endpoint.sendMessage(endpoint.session,"接收到用户: " + uuidFrom + " 发给你的 " + messageType + " 类信息: [" + message + "] 消息顺序号为: " + messageNo);
+                    websocketServer.sendMessage(websocketServer.session,"接收到用户: " + uuidFrom + " 发给你的 " + messageType + " 类信息: [" + message + "] 消息顺序号为: " + messageNo);
                     return "消息发送成功";
                 } catch (Exception e) {
                     e.printStackTrace();

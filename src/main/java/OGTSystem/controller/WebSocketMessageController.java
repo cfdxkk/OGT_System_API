@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -49,12 +51,22 @@ public class WebSocketMessageController {
         System.out.println("messageType is: " + messageType);
         System.out.println("message is: " + message);
 
-        System.out.println("这地方不应该是true么"+"".equals(uuidTo));
+
 
         // 判断传参是否异常
         if ("".equals(uuidFrom) || ("".equals(uuidTo) && uunoTo == null) || "".equals(token) || "".equals(messageType) || "".equals(message)){
             System.out.println("消息发送失败[传输的参数不足]");
-            return "消息发送失败[传输的参数不足]";
+
+            // 获取当前服务器的IP地址
+            String localhostIpAddress = "";
+            try {
+                InetAddress inetaddress = InetAddress.getLocalHost();
+                localhostIpAddress = inetaddress.getHostAddress();
+            } catch (Exception e){
+                System.out.println(e);
+            }
+
+            return "消息发送失败[传输的参数不足]-" + localhostIpAddress;
         } else {
             System.out.println("通过消息完整性验证");
 
@@ -73,7 +85,17 @@ public class WebSocketMessageController {
                         System.out.println("用户ID转换完成，获得的用户ID为: " + uuidTo);
                     } else {
                         System.out.println("消息发送失败[用户NO错误]");
-                        return "消息发送失败[用户NO错误]";
+
+                        // 获取当前服务器的IP地址
+                        String localhostIpAddress = "";
+                        try {
+                            InetAddress inetaddress = InetAddress.getLocalHost();
+                            localhostIpAddress = inetaddress.getHostAddress();
+                        } catch (Exception e){
+                            System.out.println(e);
+                        }
+
+                        return "消息发送失败[用户NO错误]-" + localhostIpAddress;
                     }
                 }
 
@@ -96,10 +118,6 @@ public class WebSocketMessageController {
                 // 发送消息并获得发送结果
                 String messageSentEventResult = wsServer.sendMessage2User(uuidFrom,uuidTo,messageType,message,messageNo);
                 System.out.println("消息发送结果为: " + messageSentEventResult);
-                // 如果发送结果是 "在本服务器上未找到目标用户"，则表明目标用户没连接到本服务器
-                if ("在本服务器上未找到目标用户".equals(messageSentEventResult)){
-                    return "消息发送失败[未找到目标用户]";
-                }
 
                 // 判断，如果消息发送成功则返回true
                 if ("消息发送成功".equals(messageSentEventResult)){
@@ -107,8 +125,16 @@ public class WebSocketMessageController {
                     // 消息顺序号更新(redis/持久层)
                     // do Something...
 
-                    // 这个地方需要返回当前服务器地址，稍后需要补充
-                    return "消息发送成功";
+                    // 获取当前服务器的IP地址
+                    String localhostIpAddress = "";
+                    try {
+                        InetAddress inetaddress = InetAddress.getLocalHost();
+                        localhostIpAddress = inetaddress.getHostAddress();
+                    } catch (Exception e){
+                        System.out.println(e);
+                    }
+
+                    return "消息发送成功-" + localhostIpAddress;
                 }
 
                 // 持久层消息记录存储
@@ -117,7 +143,17 @@ public class WebSocketMessageController {
         }
 
         System.out.println("消息发送失败[未知原因]");
-        return "消息发送失败[未知原因]";
+
+        // 获取当前服务器的IP地址
+        String localhostIpAddress = "";
+        try {
+            InetAddress inetaddress = InetAddress.getLocalHost();
+            localhostIpAddress = inetaddress.getHostAddress();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+
+        return "消息发送失败[未知原因]-" + localhostIpAddress;
     }
 
 
