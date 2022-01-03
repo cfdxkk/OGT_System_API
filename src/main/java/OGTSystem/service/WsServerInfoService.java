@@ -70,4 +70,11 @@ public class WsServerInfoService {
         return status;
     }
 
+    public List<WsServerInfoEntity> getAllServerAddress(){
+
+        WsServerInfoEntity wsserverinfoentity = new WsServerInfoEntity();
+        return repository.getWsServerInfo(wsserverinfoentity);
+
+    }
+
 }

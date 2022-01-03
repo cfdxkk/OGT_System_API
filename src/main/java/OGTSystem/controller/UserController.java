@@ -6,6 +6,7 @@ import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserCreateService;
 import OGTSystem.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,16 +15,29 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@Scope(value = "prototype")   // 提供线程安全，每次访问controller都会创建一个新容器
 public class UserController {
 
+    // 创建线程安全的UserAuthService对象
+    private static UserAuthService userauthservice;
     @Autowired
-    UserInfoService userinfoservice;
+    public void setUserauthservice(UserAuthService userauthservice){
+        UserController.userauthservice = userauthservice;
+    }
 
+    // 创建线程安全的UserAuthService对象
+    private static UserInfoService userinfoservice;
     @Autowired
-    UserCreateService usercreateservice;
+    public void setUserauthservice(UserInfoService userinfoservice){
+        UserController.userinfoservice = userinfoservice;
+    }
 
+    // 创建线程安全的 UserCreateService对象
+    private static UserCreateService usercreateservice;
     @Autowired
-    UserAuthService userauthservice;
+    public void setUsercreateservice(UserCreateService usercreateservice){
+        UserController.usercreateservice = usercreateservice;
+    }
 
     @CrossOrigin
     @GetMapping("/info")
@@ -112,7 +126,7 @@ public class UserController {
     ){
         System.out.println("uuno is: " + message);
 
-        UserInfoWebSocketController sentWs = new UserInfoWebSocketController();
+        WebSocketController sentWs = new WebSocketController();
         sentWs.onMessage(message);
 
         return "message is: "+message;

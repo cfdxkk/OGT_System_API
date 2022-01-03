@@ -5,6 +5,7 @@ import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserCreateService;
 import OGTSystem.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,17 +13,23 @@ import java.math.BigInteger;
 import java.util.List;
 
 @RestController
-@RequestMapping("/message")
-public class MessageController {
+@RequestMapping("/wsserver")
+@Scope(value = "prototype")   // 提供线程安全，每次访问controller都会创建一个新容器
+public class WebSocketMessageController {
 
+    // 创建线程安全的UserAuthService对象
+    private static UserAuthService userauthservice;
     @Autowired
-    UserInfoService userinfoservice;
+    public void setUserauthservice(UserAuthService userauthservice){
+        WebSocketMessageController.userauthservice = userauthservice;
+    }
 
+    // 创建线程安全的UserAuthService对象
+    private static UserInfoService userinfoservice;
     @Autowired
-    UserCreateService usercreateservice;
-
-    @Autowired
-    UserAuthService userauthservice;
+    public void setUserauthservice(UserInfoService userinfoservice){
+        WebSocketMessageController.userinfoservice = userinfoservice;
+    }
 
     @CrossOrigin
     @PostMapping("/sentmessage2user")
@@ -42,8 +49,13 @@ public class MessageController {
         System.out.println("messageType is: " + messageType);
         System.out.println("message is: " + message);
 
+        System.out.println("这地方不应该是true么"+"".equals(uuidTo));
+
         // 判断传参是否异常
-        if ( "".equals(uuidFrom) || ("".equals(uuidTo) || uunoTo == null) || "".equals(token) || "".equals(messageType) || "".equals(message)){
+        if ("".equals(uuidFrom) || ("".equals(uuidTo) && uunoTo == null) || "".equals(token) || "".equals(messageType) || "".equals(message)){
+            System.out.println("消息发送失败[传输的参数不足]");
+            return "消息发送失败[传输的参数不足]";
+        } else {
             System.out.println("通过消息完整性验证");
 
             // 检查来源用户是否是合法用户
@@ -79,7 +91,7 @@ public class MessageController {
                 // do Something...
 
                 // new ws server
-                UserInfoWebSocketController wsServer = new UserInfoWebSocketController();
+                WebSocketController wsServer = new WebSocketController();
 
                 // 发送消息并获得发送结果
                 String messageSentEventResult = wsServer.sendMessage2User(uuidFrom,uuidTo,messageType,message,messageNo);
@@ -95,15 +107,13 @@ public class MessageController {
                     // 消息顺序号更新(redis/持久层)
                     // do Something...
 
+                    // 这个地方需要返回当前服务器地址，稍后需要补充
                     return "消息发送成功";
                 }
 
                 // 持久层消息记录存储
                 // do Something...
             }
-        } else {
-            System.out.println("消息发送失败[传输的参数不足]");
-            return "消息发送失败[传输的参数不足]";
         }
 
         System.out.println("消息发送失败[未知原因]");

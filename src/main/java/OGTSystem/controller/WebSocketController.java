@@ -4,9 +4,9 @@ import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserInfoService;
 import OGTSystem.service.WsServerInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -16,27 +16,27 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 @Controller
 @ServerEndpoint(value = "/websocket/{username}/{uuid}/{token}")
-public class UserInfoWebSocketController {
+public class WebSocketController {
 
-    // 创建UserAuthService对象
+    // 创建线程安全的UserAuthService对象
     private static UserAuthService userauthservice;
     @Autowired
     public void setUserauthservice(UserAuthService userauthservice){
-        UserInfoWebSocketController.userauthservice = userauthservice;
+        WebSocketController.userauthservice = userauthservice;
     }
 
-    // 创建UserAuthService对象
+    // 创建线程安全的UserAuthService对象
     private static UserInfoService userinfoservice;
     @Autowired
     public void setUserauthservice(UserInfoService userinfoservice){
-        UserInfoWebSocketController.userinfoservice = userinfoservice;
+        WebSocketController.userinfoservice = userinfoservice;
     }
 
-    // 创建WsServerInfoService对象
+    // 创建线程安全的WsServerInfoService对象
     private static WsServerInfoService wsserverinfoservice;
     @Autowired
     public void setUserauthservice(WsServerInfoService wsserverinfoservice){
-        UserInfoWebSocketController.wsserverinfoservice = wsserverinfoservice;
+        WebSocketController.wsserverinfoservice = wsserverinfoservice;
     }
 
 
@@ -46,7 +46,7 @@ public class UserInfoWebSocketController {
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     //虽然@Component默认是单例模式的，但springboot还是会为每个websocket连接初始化一个bean，所以可以用一个静态set保存起来。
-    public static CopyOnWriteArraySet<UserInfoWebSocketController> websocketServerSet
+    public static CopyOnWriteArraySet<WebSocketController> websocketServerSet
             = new CopyOnWriteArraySet<>();
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
@@ -86,21 +86,20 @@ public class UserInfoWebSocketController {
             websocketServerSet.add(this);
 
             // 获取当前服务器的IP地址,组合成服务器URL
-            String serverUrl = "";
+            String localhostIpAddress = "";
             try {
                 InetAddress inetaddress = InetAddress.getLocalHost();
-                String localhostIpAddress = inetaddress.getHostAddress();
-                serverUrl = "ws://"+localhostIpAddress+":8080/websocket";
+                localhostIpAddress = inetaddress.getHostAddress();
 
             } catch (Exception e){
                 System.out.println(e);
             }
 
             //在当前用户信息表中，修改该用户连接的ws服务器连接状态记录为正在连接: 1，并记录用户连接的ws服务器地址
-            userinfoservice.setUserWebSocketServiceInfo(uuid,"1",serverUrl);
+            userinfoservice.setUserWebSocketServiceInfo(uuid,"1",localhostIpAddress);
 
             //在服务器记录中给服务器在线人数+1
-            wsserverinfoservice.wsServerConnectNumberPlusOne(serverUrl);
+            wsserverinfoservice.wsServerConnectNumberPlusOne(localhostIpAddress);
 
 
             //服务器内部计数器的在线人数+1
@@ -178,7 +177,7 @@ public class UserInfoWebSocketController {
     public void onMessage(String message) {
         System.out.println("push 接收到窗口：" + username + " 的信息：" + message);
         //发送信息
-        for (UserInfoWebSocketController endpoint : websocketServerSet) {
+        for (WebSocketController endpoint : websocketServerSet) {
             try {
                 endpoint.sendMessage(endpoint.session,"pull 接收到窗口：" + endpoint.username + " 的信息：" + message);
             } catch (Exception e) {
@@ -216,7 +215,7 @@ public class UserInfoWebSocketController {
         int connectNumber = websocketServerSet.size();
         int count = 0;
 
-        for (UserInfoWebSocketController endpoint : websocketServerSet){
+        for (WebSocketController endpoint : websocketServerSet){
 
             count++;
             if (endpoint.uuid.equals(uuidTo) || endpoint.uuid == uuidTo){
@@ -254,7 +253,7 @@ public class UserInfoWebSocketController {
     }
 
     private void subOnLineCount() {
-        UserInfoWebSocketController.onlineCount--;
+        WebSocketController.onlineCount--;
     }
 
     public static synchronized int getOnlineCount() {
@@ -262,7 +261,7 @@ public class UserInfoWebSocketController {
     }
 
     private void addOnlineCount() {
-        UserInfoWebSocketController.onlineCount++;
+        WebSocketController.onlineCount++;
     }
 
 }
