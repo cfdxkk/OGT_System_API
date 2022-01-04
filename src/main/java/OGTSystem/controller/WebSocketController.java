@@ -3,6 +3,7 @@ package OGTSystem.controller;
 import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserInfoService;
 import OGTSystem.service.WsServerInfoService;
+import OGTSystem.util.LocalhostTrueIpAddressInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -87,13 +88,8 @@ public class WebSocketController {
 
             // 获取当前服务器的IP地址
             String localhostIpAddress = "";
-            try {
-                InetAddress inetaddress = InetAddress.getLocalHost();
-                localhostIpAddress = inetaddress.getHostAddress();
-
-            } catch (Exception e){
-                System.out.println(e);
-            }
+//            LocalhostTrueIpAddressInitializer localhostipget = new LocalhostTrueIpAddressInitializer();
+            localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
 
             System.out.println("获取到当前服务器的IP地址为: " + localhostIpAddress);
             //在当前用户信息表中，修改该用户连接的ws服务器连接状态记录为正在连接: 1，并记录用户连接的ws服务器地址
