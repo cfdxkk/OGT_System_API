@@ -145,7 +145,7 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
                     System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
                     return "最终确认消息发送失败";
                 }
-                Thread.sleep(50);
+                Thread.sleep(8);
                 count++;
             }
 
