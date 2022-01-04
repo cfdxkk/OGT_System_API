@@ -63,6 +63,8 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
             @RequestParam(name = "messagetype",required = false) String messageType,
             @RequestParam(name = "message",required = false) String message
     ) throws IOException {
+        long startTime=System.currentTimeMillis();   //获取开始时间
+
         System.out.println("集群服务器收到消息了");
         System.out.println("uuidFrom is: " + uuidFrom);
         System.out.println("uuidTo is: " + uuidTo);
@@ -125,16 +127,22 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
                     // flag 归0
                     this.messageSentFlag = 0;
                     System.out.println("最终确认消息发送成功 :)");
+                    long endTime=System.currentTimeMillis(); //获取结束时间
+                    System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
                     return "最终确认消息发送成功";
                 } else if(this.messageSentFlag == 2){
                     // flag 归0
                     this.messageSentFlag = 0;
                     System.out.println("最终确认消息发送失败 :( - 全部机器完成了连接检索，但没找到符合的目标用户或消息发送失败");
+                    long endTime=System.currentTimeMillis(); //获取结束时间
+                    System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
                     return "最终确认消息发送失败";
                 } else if (this.messageSentFlag == 3){
                     // flag 归0
                     this.messageSentFlag = 0;
                     System.out.println("最终确认消息发送失败 :( - 系统超时");
+                    long endTime=System.currentTimeMillis(); //获取结束时间
+                    System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
                     return "最终确认消息发送失败";
                 }
                 Thread.sleep(50);
@@ -148,6 +156,8 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
             httpclient.close();
         }
 
+        long endTime=System.currentTimeMillis(); //获取结束时间
+        System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
         System.out.println("消息发送失败[未知原因]");
         return "消息发送失败[未知原因]";
     }
