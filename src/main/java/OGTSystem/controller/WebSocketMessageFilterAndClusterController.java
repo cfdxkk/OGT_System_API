@@ -47,10 +47,10 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
     }
 
     // 消息结果flag
-    private static int messageSentFlag;
+    private int messageSentFlag;
 
     // 服务器列表map
-    private static HashMap<String,String> wsServerAddressMap = new HashMap<String,String>();
+    private HashMap<String,String> wsServerAddressMap = new HashMap<String,String>();
 
     @CrossOrigin
     @PostMapping("/messagefilterandcluster")
@@ -71,14 +71,14 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
         System.out.println("messageType is: " + messageType);
         System.out.println("message is: " + message);
 
-        System.out.println("测试线程安全" + WebSocketMessageFilterAndClusterController.messageSentFlag);
+        System.out.println("测试线程安全" + this.messageSentFlag);
 
 
         // 获取ws服务器列表，把结果装在一个map里HashMap<服务器地址, 消息发送状态>
         List<WsServerInfoEntity> wsServerInfoList = wsserverinfoservice.getAllServerAddress();
         for (WsServerInfoEntity wsServerInfo :wsServerInfoList){
             String wsServerAddress = wsServerInfo.getServerAddress();
-            WebSocketMessageFilterAndClusterController.wsServerAddressMap.put(wsServerAddress,"");
+            this.wsServerAddressMap.put(wsServerAddress,"");
 //            String wsMessagePostAddress = "http://"+wsServerAddress+":8080/wsserver/sentmessage2user";
 
         }
@@ -92,7 +92,7 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
             // 3.0启动
             httpclient.start();
 
-            for(String wsServerAddress: WebSocketMessageFilterAndClusterController.wsServerAddressMap.keySet()){
+            for(String wsServerAddress: this.wsServerAddressMap.keySet()){
 
                 // 3.1 拼接请求参数
                 String messageUrl = "http://" + wsServerAddress + ":8888/wsserver/sentmessage2user";
@@ -107,9 +107,9 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
 
                 // 3.2 发起请求，不阻塞，马上返回
                 // 我想让callback方法给this类中的一个状态flag[messageSentFlag]赋值，然后我再检测状态flag即可得知消息发送是否成功
-                System.out.println("看看成功的回调是否好用(前)" + WebSocketMessageFilterAndClusterController.messageSentFlag);
+                System.out.println("看看成功的回调是否好用(前)" + this.messageSentFlag);
                 httpclient.execute(httppost, this);
-                System.out.println("看看成功的回调是否好用" + WebSocketMessageFilterAndClusterController.messageSentFlag);
+                System.out.println("看看成功的回调是否好用" + this.messageSentFlag);
 
                 // 3.3 休眠10s,避免请求执行完成前，关闭了链接
                 // 最终应该实现为不停循环判断[messageSentFlag]，一旦flag为真则表示消息发送成功(跳出循环)，一旦为其他值则进行其他操作 etc...
@@ -120,16 +120,20 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
             Long count = 1L;
             while (true){
 
-                System.out.println("messageSentFlag NO.[" + count + "]is: " + WebSocketMessageFilterAndClusterController.messageSentFlag);
-                if (WebSocketMessageFilterAndClusterController.messageSentFlag == 1){
+                System.out.println("messageSentFlag NO.[" + count + "]is: " + this.messageSentFlag);
+                if (this.messageSentFlag == 1){
                     // flag 归0
-                    WebSocketMessageFilterAndClusterController.messageSentFlag = 0;
+                    this.messageSentFlag = 0;
                     System.out.println("最终确认消息发送成功 :)");
                     return "最终确认消息发送成功";
-                } else if(WebSocketMessageFilterAndClusterController.messageSentFlag == 2){
+                } else if(this.messageSentFlag == 2){
+                    // flag 归0
+                    this.messageSentFlag = 0;
                     System.out.println("最终确认消息发送失败 :( - 全部机器完成了连接检索，但没找到符合的目标用户或消息发送失败");
                     return "最终确认消息发送失败";
-                } else if (WebSocketMessageFilterAndClusterController.messageSentFlag == 3){
+                } else if (this.messageSentFlag == 3){
+                    // flag 归0
+                    this.messageSentFlag = 0;
                     System.out.println("最终确认消息发送失败 :( - 系统超时");
                     return "最终确认消息发送失败";
                 }
@@ -165,23 +169,21 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
 
             // 一旦结果为成功则改变[messageSentFlag]的值，让上面步骤3.3的死循环跳出，或失败(根据服务器地址表筛查全部服务器都返回消息发送失败)时返回其他值
             if("消息发送成功".equals(messageSentResult)){
-                WebSocketMessageFilterAndClusterController.messageSentFlag = 1;
+                this.messageSentFlag = 1;
                 System.out.println("messageSentFlag修改1成功");
             } else {
                 // 将失败的结果存放到map中对应的key中
-                if (WebSocketMessageFilterAndClusterController.wsServerAddressMap.containsKey(wsServerAddress)){
-                    WebSocketMessageFilterAndClusterController.wsServerAddressMap.put(wsServerAddress,"1");
+                if (this.wsServerAddressMap.containsKey(wsServerAddress)){
+                    this.wsServerAddressMap.put(wsServerAddress,"1");
                 }
 
                 // 判断map中的values是否有空的，如果没有空的，则将messageSentFlag改为2，表示发送失败
-                if (!WebSocketMessageFilterAndClusterController.wsServerAddressMap.containsValue("")){
-                    WebSocketMessageFilterAndClusterController.messageSentFlag = 2;
+                if (!this.wsServerAddressMap.containsValue("")){
+                    this.messageSentFlag = 2;
                     System.out.println("messageSentFlag修改2成功");
                 }
 
-                WebSocketMessageFilterAndClusterController.setTimeout(() ->
-                    WebSocketMessageFilterAndClusterController.messageSentFlag = 3
-                    , 10000);
+                this.setTimeout(() -> this.messageSentFlag = 3, 10000);
 
             }
         } catch (ParseException e) {
