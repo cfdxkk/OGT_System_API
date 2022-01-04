@@ -4,6 +4,7 @@ import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserCreateService;
 import OGTSystem.service.UserInfoService;
+import OGTSystem.util.LocalhostTrueIpAddressInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
@@ -59,12 +60,7 @@ public class WebSocketMessageController {
 
             // 获取当前服务器的IP地址
             String localhostIpAddress = "";
-            try {
-                InetAddress inetaddress = InetAddress.getLocalHost();
-                localhostIpAddress = inetaddress.getHostAddress();
-            } catch (Exception e){
-                System.out.println(e);
-            }
+            localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
 
             return "消息发送失败[传输的参数不足]-" + localhostIpAddress;
         } else {
@@ -88,12 +84,7 @@ public class WebSocketMessageController {
 
                         // 获取当前服务器的IP地址
                         String localhostIpAddress = "";
-                        try {
-                            InetAddress inetaddress = InetAddress.getLocalHost();
-                            localhostIpAddress = inetaddress.getHostAddress();
-                        } catch (Exception e){
-                            System.out.println(e);
-                        }
+                        localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
 
                         return "消息发送失败[用户NO错误]-" + localhostIpAddress;
                     }
@@ -127,12 +118,7 @@ public class WebSocketMessageController {
 
                     // 获取当前服务器的IP地址
                     String localhostIpAddress = "";
-                    try {
-                        InetAddress inetaddress = InetAddress.getLocalHost();
-                        localhostIpAddress = inetaddress.getHostAddress();
-                    } catch (Exception e){
-                        System.out.println(e);
-                    }
+                    localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
 
                     return "消息发送成功-" + localhostIpAddress;
                 }
@@ -146,12 +132,7 @@ public class WebSocketMessageController {
 
         // 获取当前服务器的IP地址
         String localhostIpAddress = "";
-        try {
-            InetAddress inetaddress = InetAddress.getLocalHost();
-            localhostIpAddress = inetaddress.getHostAddress();
-        } catch (Exception e){
-            System.out.println(e);
-        }
+        localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
 
         return "消息发送失败[未知原因]-" + localhostIpAddress;
     }

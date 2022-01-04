@@ -117,20 +117,24 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
 
             }
 
+            Long count = 1L;
             while (true){
 
-                System.out.println("messageSentFlag is: " + WebSocketMessageFilterAndClusterController.messageSentFlag);
+                System.out.println("messageSentFlag NO.[" + count + "]is: " + WebSocketMessageFilterAndClusterController.messageSentFlag);
                 if (WebSocketMessageFilterAndClusterController.messageSentFlag == 1){
                     // flag 归0
                     WebSocketMessageFilterAndClusterController.messageSentFlag = 0;
                     System.out.println("最终确认消息发送成功 :)");
                     return "最终确认消息发送成功";
                 } else if(WebSocketMessageFilterAndClusterController.messageSentFlag == 2){
-                    System.out.println("最终确认消息发送失败 :(");
+                    System.out.println("最终确认消息发送失败 :( - 全部机器完成了连接检索，但没找到符合的目标用户或消息发送失败");
+                    return "最终确认消息发送失败";
+                } else if (WebSocketMessageFilterAndClusterController.messageSentFlag == 3){
+                    System.out.println("最终确认消息发送失败 :( - 系统超时");
                     return "最终确认消息发送失败";
                 }
                 Thread.sleep(50);
-
+                count++;
             }
 
         } catch (Exception e){
@@ -175,6 +179,10 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
                     System.out.println("messageSentFlag修改2成功");
                 }
 
+                WebSocketMessageFilterAndClusterController.setTimeout(() ->
+                    WebSocketMessageFilterAndClusterController.messageSentFlag = 3
+                    , 10000);
+
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -184,6 +192,18 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
     }
     public void cancelled() {
         System.out.println("cancelled");
+    }
+
+    public static void setTimeout(Runnable runnable, int delay){
+        new Thread(() -> {
+            try {
+                Thread.sleep(delay);
+                runnable.run();
+            }
+            catch (Exception e){
+                System.err.println(e);
+            }
+        }).start();
     }
 }
 
