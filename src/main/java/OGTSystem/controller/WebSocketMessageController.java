@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
@@ -20,14 +19,14 @@ import java.util.List;
 @Scope(value = "prototype")   // 提供线程安全，每次访问controller都会创建一个新容器
 public class WebSocketMessageController {
 
-    // 创建线程安全的UserAuthService对象
+    // 创建线程安全的 UserAuthService 对象
     private static UserAuthService userauthservice;
     @Autowired
     public void setUserauthservice(UserAuthService userauthservice){
         WebSocketMessageController.userauthservice = userauthservice;
     }
 
-    // 创建线程安全的UserAuthService对象
+    // 创建线程安全的 UserInfoService 对象
     private static UserInfoService userinfoservice;
     @Autowired
     public void setUserauthservice(UserInfoService userinfoservice){
@@ -40,8 +39,9 @@ public class WebSocketMessageController {
     public String sentMessage2User(
             @RequestParam(name = "uuidfrom",required = false) String uuidFrom,
             @RequestParam(name = "uuidto",required = false) String uuidTo,
-            @RequestParam(name = "uunoto",required = false) BigInteger uunoTo,
+            @RequestParam(name = "uunoto",required = false) Long uunoTo,
             @RequestParam(name = "token",required = false) String token,
+            @RequestParam(name = "messageno",required = false) Long messageNo,
             @RequestParam(name = "messagetype",required = false) String messageType,
             @RequestParam(name = "message",required = false) String message
     ){
@@ -49,6 +49,7 @@ public class WebSocketMessageController {
         System.out.println("uuidTo is: " + uuidTo);
         System.out.println("uunoTo is: " + uunoTo);
         System.out.println("token is: " + token);
+        System.out.println("messageNo is: " + messageNo);
         System.out.println("messageType is: " + messageType);
         System.out.println("message is: " + message);
 
@@ -71,7 +72,7 @@ public class WebSocketMessageController {
                 System.out.println("通过用户安全性验证");
 
                 // 如果只传过来uunoTo的情况下，会根据uuno获取uuid
-                if ("".equals(uuidTo) && !("".equals(uunoTo))){
+                if ("".equals(uuidTo)){
                     System.out.println("用户ID开始转换");
                     UserInfoEntity userinfoentity = new UserInfoEntity();
                     userinfoentity.setUUNO(uunoTo);
@@ -90,18 +91,7 @@ public class WebSocketMessageController {
                     }
                 }
 
-                // 验证这条消息是否需要好友关系才能发送
-                // do Something...
 
-                // 消息问题check 攻击、注入 etc...
-                // do Something...
-
-                // 获取消息顺序号(redis/持久层)
-                // do Something...
-                double messageNo = 0d;
-
-                // AI消息鉴定
-                // do Something...
 
                 // new ws server
                 WebSocketController wsServer = new WebSocketController();

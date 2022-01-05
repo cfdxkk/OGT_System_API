@@ -2,7 +2,6 @@ package OGTSystem.entity;
 
 import lombok.Data;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 @Data
@@ -11,7 +10,7 @@ public class UserInfoEntity {
     // 唯一用户ID
     private String UUID;
     // 自增唯一用户编号
-    private BigInteger UUNO;
+    private Long UUNO;
     // 用户昵称
     private String username;
     // 密码

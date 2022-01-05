@@ -19,21 +19,21 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ServerEndpoint(value = "/websocket/{username}/{uuid}/{token}")
 public class WebSocketController {
 
-    // 创建线程安全的UserAuthService对象
+    // 创建线程安全的 UserAuthService 对象
     private static UserAuthService userauthservice;
     @Autowired
     public void setUserauthservice(UserAuthService userauthservice){
         WebSocketController.userauthservice = userauthservice;
     }
 
-    // 创建线程安全的UserAuthService对象
+    // 创建线程安全的U UserInfoService 对象
     private static UserInfoService userinfoservice;
     @Autowired
     public void setUserauthservice(UserInfoService userinfoservice){
         WebSocketController.userinfoservice = userinfoservice;
     }
 
-    // 创建线程安全的WsServerInfoService对象
+    // 创建线程安全的 WsServerInfoService 对象
     private static WsServerInfoService wsserverinfoservice;
     @Autowired
     public void setUserauthservice(WsServerInfoService wsserverinfoservice){
@@ -199,7 +199,7 @@ public class WebSocketController {
      * @param messageInfo 预留字段
      * @return
      */
-    public String sendMessage2User(String uuidFrom, String uuidTo, String messageType, String message, double messageNo, String... messageInfo){
+    public String sendMessage2User(String uuidFrom, String uuidTo, String messageType, String message, Long messageNo, String... messageInfo){
 
         int connectNumber = websocketServerSet.size();
         int count = 0;

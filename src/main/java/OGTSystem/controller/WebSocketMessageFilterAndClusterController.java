@@ -3,10 +3,7 @@ package OGTSystem.controller;
 import OGTSystem.entity.MessageEntity;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.entity.WsServerInfoEntity;
-import OGTSystem.service.UserAuthService;
-import OGTSystem.service.UserCreateService;
-import OGTSystem.service.UserInfoService;
-import OGTSystem.service.WsServerInfoService;
+import OGTSystem.service.*;
 import OGTSystem.util.AsyncHttpRequestCallback;
 
 import org.apache.http.HttpResponse;
@@ -21,17 +18,14 @@ import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.EscapedErrors;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
-
-
-
 
 
 @RestController
@@ -46,6 +40,28 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
         WebSocketMessageFilterAndClusterController.wsserverinfoservice = wsserverinfoservice;
     }
 
+    // 创建线程安全的U UserInfoService 对象
+    private static UserInfoService userinfoservice;
+    @Autowired
+    public void setUserauthservice(UserInfoService userinfoservice){
+        WebSocketMessageFilterAndClusterController.userinfoservice = userinfoservice;
+    }
+
+    // 创建线程安全的U UserInfoService 对象
+    private static MessageNoFriendService messagenofriendservice;
+    @Autowired
+    public void setUserauthservice(MessageNoFriendService messagenofriendservice){
+        WebSocketMessageFilterAndClusterController.messagenofriendservice = messagenofriendservice;
+    }
+
+    // 创建线程安全的 RedisTemplate 对象
+    private static RedisTemplate<String, String> redistemplate;
+    @Autowired
+    public void setRedistemplate(RedisTemplate<String, String> redistemplate){
+        WebSocketMessageFilterAndClusterController.redistemplate = redistemplate;
+    }
+
+
     // 消息结果flag
     private int messageSentFlag;
 
@@ -58,11 +74,12 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
     public String sentMessage2User(
             @RequestParam(name = "uuidfrom",required = false) String uuidFrom,
             @RequestParam(name = "uuidto",required = false) String uuidTo,
-            @RequestParam(name = "uunoto",required = false) BigInteger uunoTo,
+            @RequestParam(name = "uunoto",required = false) Long uunoTo,
             @RequestParam(name = "token",required = false) String token,
             @RequestParam(name = "messagetype",required = false) String messageType,
             @RequestParam(name = "message",required = false) String message
     ) throws IOException {
+
         long startTime=System.currentTimeMillis();   //获取开始时间
 
         System.out.println("集群服务器收到消息了");
@@ -73,7 +90,32 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
         System.out.println("messageType is: " + messageType);
         System.out.println("message is: " + message);
 
-        System.out.println("测试线程安全" + this.messageSentFlag);
+        // 根据uuidFrom获取uunoFrom
+        List<UserInfoEntity> userinfo =  userinfoservice.getByUUID(uuidFrom);
+        Long uunoFrom = null;
+        if (userinfo.size()>0){
+            uunoFrom = userinfo.get(0).getUUNO();
+        } else {
+            System.out.println("最终确认消息发送失败 :( - 通过uuidFrom未能找到uunofrom");
+            return "最终确认消息发送失败";
+        }
+
+
+
+        // 验证这条消息是否需要好友关系才能发送
+        // do Something...
+
+        // 消息问题check 攻击、注入 etc...
+        // do Something...
+
+        // 获取/存储 消息顺序号(redis/持久层)
+        String messageNo = "";
+        messageNo = messagenofriendservice.getAndCheckAndEditMessageNo(uunoFrom,uunoTo,redistemplate);
+        System.out.println("其实messageNo已经完成了");
+//        messageNo = "0";
+
+        // AI消息鉴定
+        // do Something...
 
 
         // 获取ws服务器列表，把结果装在一个map里HashMap<服务器地址, 消息发送状态>
@@ -81,8 +123,6 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
         for (WsServerInfoEntity wsServerInfo :wsServerInfoList){
             String wsServerAddress = wsServerInfo.getServerAddress();
             this.wsServerAddressMap.put(wsServerAddress,"");
-//            String wsMessagePostAddress = "http://"+wsServerAddress+":8080/wsserver/sentmessage2user";
-
         }
 
         // 2.创建异步httpclient对象
@@ -103,8 +143,10 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
                 urlbuilder.setParameter("uuidto",uuidTo);
                 urlbuilder.setParameter("uunoto", uunoTo.toString());
                 urlbuilder.setParameter("token", token);
+                urlbuilder.setParameter("messageno", messageNo);
                 urlbuilder.setParameter("messagetype", messageType);
                 urlbuilder.setParameter("message", message);
+
                 HttpPost httppost = new HttpPost(urlbuilder.build());
 
                 // 3.2 发起请求，不阻塞，马上返回
@@ -113,19 +155,23 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
                 httpclient.execute(httppost, this);
                 System.out.println("看看成功的回调是否好用" + this.messageSentFlag);
 
-                // 3.3 休眠10s,避免请求执行完成前，关闭了链接
-                // 最终应该实现为不停循环判断[messageSentFlag]，一旦flag为真则表示消息发送成功(跳出循环)，一旦为其他值则进行其他操作 etc...
-                // Thread.sleep(10000);
-
             }
 
             Long count = 1L;
             while (true){
 
                 System.out.println("messageSentFlag NO.[" + count + "]is: " + this.messageSentFlag);
+
+                if (count>10000000){
+                    return "最终确认消息发送失败 :( - 循环次数过多，计数器超时";
+                }
+
                 if (this.messageSentFlag == 1){
                     // flag 归0
                     this.messageSentFlag = 0;
+
+                    messagenofriendservice.messageNoPlusOne(uunoFrom,uunoTo,redistemplate,messageNo);
+
                     System.out.println("最终确认消息发送成功 :)");
                     long endTime=System.currentTimeMillis(); //获取结束时间
                     System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
@@ -202,6 +248,7 @@ public class WebSocketMessageFilterAndClusterController implements FutureCallbac
             e.printStackTrace();
         }
     }
+
     public void cancelled() {
         System.out.println("cancelled");
     }

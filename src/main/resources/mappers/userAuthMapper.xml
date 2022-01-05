@@ -8,19 +8,7 @@
         <result column="user_token" property="userToken" jdbcType="VARCHAR"></result>
         <result column="user_attack_time" property="userAttackTime" jdbcType="VARCHAR"></result>
     </resultMap>
-<!--    <resultMap id="BaseResultMap" type="OGTSystem.entity.UserInfoEntity">-->
-<!--        <result column="UUID" property="UUID" jdbcType="VARCHAR" />-->
-<!--        <result column="username" property="username" jdbcType="VARCHAR" />-->
-<!--        <result column="password" property="password" jdbcType="VARCHAR" />-->
-<!--        <result column="privacy_auth" property="privacyAuth" jdbcType="VARCHAR" />-->
-<!--        <result column="user_avatar" property="userAvatar" jdbcType="VARCHAR" />-->
-<!--        <result column="user_info" property="userInfo" jdbcType="VARCHAR" />-->
-<!--        <result column="user_email" property="userEmail" jdbcType="VARCHAR" />-->
-<!--        <result column="user_sex" property="userSex" jdbcType="VARCHAR" />-->
-<!--        <result column="user_birthday" property="userBirthday" jdbcType="DATE" />-->
-<!--        <result column="user_location" property="userLocation" jdbcType="VARCHAR" />-->
-<!--    </resultMap>-->
-<!--    &lt;!&ndash; 查询单条记录 &ndash;&gt;-->
+<!--     查询单条记录 -->
     <select id="getUserTokenByUserInfoEntity" resultMap="BaseResultMap">
         SELECT
             UUID, UUNO, user_token, user_attack_time

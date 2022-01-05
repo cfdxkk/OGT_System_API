@@ -94,6 +94,17 @@
       <version>4.1.5</version>
     </dependency>
 
+    <!-- Redis 内存数据库 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+
+    <!-- lettuce pool -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-pool2</artifactId>
+    </dependency>
 
   </dependencies>
 
