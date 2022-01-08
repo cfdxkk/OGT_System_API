@@ -54,7 +54,33 @@
 
     <update id="setUserWebSocketServiceInfo">
         update user_often_edit
-        set ws_status = #{wsStatus,jdbcType=VARCHAR}, user_ws_server = #{userWsServer,jdbcType=VARCHAR}
+        set
+            ws_status = #{wsStatus,jdbcType=VARCHAR},
+            user_ws_server = #{userWsServer,jdbcType=VARCHAR}
+            <if test="wsAndroidPhone != null">
+                , ws_android_phone_status = #{wsAndroidPhone}
+            </if>
+            <if test="wsIosPhone != null">
+                , ws_ios_phone_status = #{wsIosPhone}
+            </if>
+            <if test="wsAndroidPad != null">
+                , ws_android_pad_status = #{wsAndroidPad}
+            </if>
+            <if test="wsIosPad != null">
+                , ws_ios_pad_status = #{wsIosPad}
+            </if>
+            <if test="wsWindows != null">
+                , ws_windows_status = #{wsWindows}
+            </if>
+            <if test="wsMacos != null">
+                , ws_macos_status = #{wsMacos}
+            </if>
+            <if test="wsWebBrowser != null">
+                , ws_web_browser_status = #{wsWebBrowser}
+            </if>
+            <if test="wsLinux != null">
+                , ws_linux_status = #{wsLinux}
+            </if>
         where UUID = #{UUID,jdbcType=VARCHAR}
     </update>
 </mapper>

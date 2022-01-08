@@ -22,11 +22,26 @@ public class UserInfoService {
         return repository.getByUserInfoEntity(userinfoentity);
     }
 
-    public int setUserWebSocketServiceInfo (String UUID, String wsStatus, String userWsServer){
+    public int setUserWebSocketServiceInfo (String UUID, String terminalType, String status, String userWsServer ){
+
         UserInfoEntity userinfoentity = new UserInfoEntity();
         userinfoentity.setUUID(UUID);
-        userinfoentity.setWsStatus(wsStatus);
+        userinfoentity.setWsStatus("1");
         userinfoentity.setUserWsServer(userWsServer);
+
+        if ( terminalType != null ){
+            switch (terminalType){
+                case "android_phone": userinfoentity.setWsAndroidPhone(status); break;
+                case "ios_phone": userinfoentity.setWsIosPhone(status); break;
+                case "android_pad": userinfoentity.setWsAndroidPad(status); break;
+                case "ios_pad": userinfoentity.setWsIosPad(status); break;
+                case "windows": userinfoentity.setWsWindows(status); break;
+                case "macos": userinfoentity.setWsMacos(status); break;
+                case "web_browser": userinfoentity.setWsWebBrowser(status); break;
+                case "linux": userinfoentity.setWsLinux(status); break;
+            }
+        }
+
         return repository.setUserWebSocketServiceInfo(userinfoentity);
     }
 }

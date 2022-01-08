@@ -22,7 +22,15 @@ public class UserInfoEntity {
     // 用户个人简介
     private String userInfo;
     // 用户ws连接状态
-    private String wsStatus;
+    private String wsStatus;  // 通常
+    private String wsAndroidPhone;  // 安卓手机
+    private String wsIosPhone;  // iphone
+    private String wsAndroidPad;  // 安卓平板
+    private String wsIosPad;  // ipad
+    private String wsWindows;  // 微软windows系统
+    private String wsMacos;  // 苹果MacOs
+    private String wsWebBrowser;  // 网络浏览器
+    private String wsLinux;  //  linux
     // 用户ws地址
     private String userWsServer;
 
