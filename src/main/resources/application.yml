@@ -1,7 +1,7 @@
 # spring 配置
 spring:
   application:
-    name: OGT_System_mybatis_config
+    name: OGT_System
   # redis数据源
   redis:
     # 基础设置
@@ -41,5 +41,5 @@ server:
 mybatis:
   mapper-locations: classpath:mappers/*.xml    # mapper映射文件位置
   type-aliases-package: entity    # 实体类所在的位置
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   #用于控制台打印sql语句
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   #用于控制台打印sql语句

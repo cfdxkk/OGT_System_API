@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/message")
 @Scope(value = "prototype")   // 提供线程安全，每次访问controller都会创建一个新容器
-public class WebSocketMessageFilterAndClusterController  {
+public class WebSocketMessageManagementController {
 
     @Autowired
     MessageService messageservice = new MessageService();

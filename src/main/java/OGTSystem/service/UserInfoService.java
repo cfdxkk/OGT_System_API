@@ -26,7 +26,7 @@ public class UserInfoService {
 
         UserInfoEntity userinfoentity = new UserInfoEntity();
         userinfoentity.setUUID(UUID);
-        userinfoentity.setWsStatus("1");
+        userinfoentity.setWsStatus(status);
         userinfoentity.setUserWsServer(userWsServer);
 
         if ( terminalType != null ){

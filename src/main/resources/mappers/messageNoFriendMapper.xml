@@ -23,9 +23,9 @@
         value(#{friend,jdbcType=VARCHAR}, #{messageNo,jdbcType=BIGINT});
     </insert>
 
-    <insert id="setMessageNo">
+    <update id="setMessageNo">
         update message_no_friend
         set message_no = #{messageNo}
         where friend = #{friend}
-    </insert>
+    </update>
 </mapper>

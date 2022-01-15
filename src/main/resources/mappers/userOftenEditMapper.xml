@@ -10,8 +10,18 @@
         <result column="privacy_auth" property="privacyAuth" jdbcType="VARCHAR" />
         <result column="user_avatar" property="userAvatar" jdbcType="VARCHAR" />
         <result column="user_info" property="userInfo" jdbcType="VARCHAR" />
+
         <result column="ws_status" property="wsStatus" jdbcType="CHAR" />
+        <result column="ws_android_phone_status" property="wsAndroidPhone" jdbcType="VARCHAR" />
+        <result column="ws_ios_phone_status" property="wsIosPhone" jdbcType="VARCHAR" />
+        <result column="ws_android_pad_status" property="wsAndroidPad" jdbcType="VARCHAR" />
+        <result column="ws_ios_pad_status" property="wsIosPad" jdbcType="VARCHAR" />
+        <result column="ws_windows_status" property="wsWindows" jdbcType="VARCHAR" />
+        <result column="ws_macos_status" property="wsMacos" jdbcType="VARCHAR" />
+        <result column="ws_web_browser_status" property="wsWebBrowser" jdbcType="VARCHAR" />
+        <result column="ws_linux_status" property="wsLinux" jdbcType="VARCHAR" />
         <result column="user_ws_server" property="userWsServer" jdbcType="VARCHAR" />
+
 
         <result column="user_email" property="userEmail" jdbcType="VARCHAR" />
         <result column="user_sex" property="userSex" jdbcType="VARCHAR" />
@@ -21,7 +31,8 @@
     <!-- 通过UUID查询单条或多条记录 -->
     <select id="selectByUUId" parameterType="String" resultMap="BaseResultMap">
         SELECT
-            UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info, ws_status, user_ws_server,
+            UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info,
+            ws_status, ws_android_phone_status, ws_ios_phone_status, ws_android_pad_status, ws_ios_pad_status, ws_windows_status, ws_macos_status, ws_web_browser_status, ws_linux_status, user_ws_server,
             user_email, user_sex, user_birthday, user_location
         FROM user_often_edit UOE left join user_not_often_edit UNOE ON UOE.UUID = UNOE.UUID
         <if test="uuid != null">
@@ -33,6 +44,7 @@
     <select id="getByUserInfoEntity" resultMap="BaseResultMap">
         SELECT
         UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info,
+        ws_status, ws_android_phone_status, ws_ios_phone_status, ws_android_pad_status, ws_ios_pad_status, ws_windows_status, ws_macos_status, ws_web_browser_status, ws_linux_status, user_ws_server,
         user_email, user_sex, user_birthday, user_location
         FROM user_often_edit UOE left join user_not_often_edit UNOE ON UOE.UUID = UNOE.UUID
         WHERE 1 = 1

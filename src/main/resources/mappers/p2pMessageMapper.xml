@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OGTSystem.mapper.P2PMessageMapper">
+    <resultMap id="BaseResultMap" type="OGTSystem.entity.P2PMessageEntity">
+        <result column="message_id" property="messageId" jdbcType="BIGINT"></result>
+        <result column="chat_message_no" property="chatMessageNo" jdbcType="BIGINT"></result>
+        <result column="message_from" property="messageFrom" jdbcType="VARCHAR"></result>
+        <result column="message_target" property="messageTarget" jdbcType="VARCHAR"></result>
+        <result column="lang_massage_flag" property="longMessageFlag" jdbcType="TINYINT"></result>
+        <result column="message_type" property="messageType" jdbcType="VARCHAR"></result>
+        <result column="sent_flag" property="sendFlag" jdbcType="TINYINT"></result>
+        <result column="read_flag" property="readFlag" jdbcType="TINYINT"></result>
+        <result column="violation_flag" property="violationFlag" jdbcType="TINYINT"></result>
+        <result column="message" property="message" jdbcType="VARCHAR"></result>
+        <result column="sent_datetime" property="sentDate" jdbcType="TIMESTAMP"></result>
+        <result column="edit_datetime" property="editDate" jdbcType="TIMESTAMP"></result>
+        <result column="edit_user_id" property="messageEditorID" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <!-- 根据UUID查询所所有消息 -->
+    <select id="getMessagesByMessageFromUUID" resultMap="BaseResultMap" parameterType="String">
+        SELECT
+        message_id, chat_message_no, message_from, message_target,
+        lang_massage_flag, message_type, sent_flag, read_flag,
+        violation_flag, message, sent_datetime, edit_datetime, edit_user_id
+        FROM p2p_message
+        WHERE 1 = 1
+        <if test="messageFrom != null">
+            AND message_from = #{messageFrom}
+        </if>
+    </select>
+
+    <!-- 查询单条记录 -->
+    <select id="getMessagesByP2PMessageEntity" resultMap="BaseResultMap">
+        SELECT
+        message_id, chat_message_no, message_from, message_target,
+        lang_massage_flag, message_type, sent_flag, read_flag,
+        violation_flag, message, sent_datetime, edit_datetime, edit_user_id
+        FROM p2p_message
+        WHERE 1 = 1
+        <if test="messageId != null">
+            AND message_id = #{messageId}
+        </if>
+        <if test="chatMessageNo != null">
+            AND chat_message_no = #{chatMessageNo}
+        </if>
+        <if test="messageFrom != null">
+            AND message_from = #{messageFrom}
+        </if>
+        <if test="messageTarget != null">
+            AND message_target = #{messageTarget}
+        </if>
+        <if test="longMessageFlag != null">
+            AND lang_massage_flag = #{longMessageFlag}
+        </if>
+        <if test="messageType != null">
+            AND message_type = #{messageType}
+        </if>
+        <if test="sendFlag != null">
+            AND sent_flag = #{sendFlag}
+        </if>
+        <if test="readFlag != null">
+            AND read_flag = #{readFlag}
+        </if>
+        <if test="violationFlag != null">
+            AND violation_flag = #{violationFlag}
+        </if>
+        <if test="message != null">
+            AND message = #{message}
+        </if>
+        <if test="sentDate != null">
+            AND sent_datetime = #{sentDate}
+        </if>
+        <if test="editDate != null">
+            AND edit_datetime = #{editDate}
+        </if>
+        <if test="messageEditorID != null">
+            AND edit_user_id = #{messageEditorID}
+        </if>
+    </select>
+
+    <insert id="createMessage">
+        insert into p2p_message(
+                    message_id
+                <if test="chatMessageNo != null">
+                    , chat_message_no
+                </if>
+                <if test="messageFrom != null">
+                    , message_from
+                </if>
+                <if test="messageTarget != null">
+                    , message_target
+                </if>
+                <if test="longMessageFlag != null">
+                    , lang_massage_flag
+                </if>
+                <if test="messageType != null">
+                    , message_type
+                </if>
+                <if test="sendFlag != null">
+                    , sent_flag
+                </if>
+                <if test="readFlag != null">
+                    , read_flag
+                </if>
+                <if test="violationFlag != null">
+                    , violation_flag
+                </if>
+                <if test="message != null">
+                    , message
+                </if>
+                <if test="sentDate != null">
+                    , sent_datetime
+                </if>
+                <if test="editDate != null">
+                    , edit_datetime
+                </if>
+                <if test="messageEditorID != null">
+                    , edit_user_id
+                </if>
+                )
+        value(
+            null
+            <if test="chatMessageNo != null">
+                , #{chatMessageNo}
+            </if>
+            <if test="messageFrom != null">
+                , #{messageFrom}
+            </if>
+            <if test="messageTarget != null">
+                , #{messageTarget}
+            </if>
+            <if test="longMessageFlag != null">
+                , #{longMessageFlag}
+            </if>
+            <if test="messageType != null">
+                , #{messageType}
+            </if>
+            <if test="sendFlag != null">
+                , #{sendFlag}
+            </if>
+            <if test="readFlag != null">
+                , #{readFlag}
+            </if>
+            <if test="violationFlag != null">
+                , #{violationFlag}
+            </if>
+            <if test="message != null">
+                , #{message}
+            </if>
+            <if test="sentDate != null">
+                , #{sentDate}
+            </if>
+            <if test="editDate != null">
+                , #{editDate}
+            </if>
+            <if test="messageEditorID != null">
+                , #{messageEditorID}
+            </if>
+            );
+    </insert>
+
+    <update id="setMessage">
+        update p2p_message
+        set message = #{message}
+        where
+        WHERE 1 = 1
+            <if test="messageId != null">
+                AND message_id = #{messageId}
+            </if>
+            <if test="chatMessageNo != null">
+                AND chat_message_no = #{chatMessageNo}
+            </if>
+            <if test="messageFrom != null">
+                AND message_from = #{messageFrom}
+            </if>
+            <if test="messageTarget != null">
+                AND message_target = #{messageTarget}
+            </if>
+            <if test="longMessageFlag != null">
+                AND lang_massage_flag = #{longMessageFlag}
+            </if>
+            <if test="messageType != null">
+                AND message_type = #{messageType}
+            </if>
+            <if test="sendFlag != null">
+                AND sent_flag = #{sendFlag}
+            </if>
+            <if test="readFlag != null">
+                AND read_flag = #{readFlag}
+            </if>
+            <if test="violationFlag != null">
+                AND violation_flag = #{violationFlag}
+            </if>
+            <if test="sentDate != null">
+                AND sent_datetime = #{sentDate}
+            </if>
+            <if test="editDate != null">
+                AND edit_datetime = #{editDate}
+            </if>
+            <if test="messageEditorID != null">
+                AND edit_user_id = #{messageEditorID}
+            </if>
+    </update>
+</mapper>

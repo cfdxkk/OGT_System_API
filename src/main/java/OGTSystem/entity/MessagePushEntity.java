@@ -3,7 +3,7 @@ package OGTSystem.entity;
 import lombok.Data;
 
 @Data
-public class MessageEntity {
+public class MessagePushEntity {
 
     // 消息来源ID
     private String uuidfrom;
