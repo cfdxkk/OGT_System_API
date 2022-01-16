@@ -243,6 +243,7 @@ public class WsP2PMessageConcurrencyAndConvergenceService implements FutureCallb
         System.out.println("cancelled");
     }
 
+    // 一旦结果为成功则改变[messageSentFlag]的值，让上面步骤3.3的循环跳出
     public static void setTimeout(Runnable runnable, int delay){
         new Thread(() -> {
             try {
