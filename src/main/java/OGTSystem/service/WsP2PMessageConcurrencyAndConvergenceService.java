@@ -145,18 +145,30 @@ public class WsP2PMessageConcurrencyAndConvergenceService implements FutureCallb
 
                 }
 
+                // 3.3 死循环验证已读flag是否有返回值的情况
                 Long count = 1L;
                 while (true){
 
                     System.out.println("messageSentFlag NO.[" + count + "]is: " + this.messageSentFlag);
 
                     if (count>10000000){
-                        return "最终确认消息发送失败 :( - 循环次数过多，计数器超时";
+
+                        // flag 归0
+                        this.messageSentFlag = 0;
+
+                        // 在redis和持久层存储离线消息
+                        p2pmessageservice.setP2Pmessage(messageNo,uuidFrom,uuidTo,message,messageType,redistemplate);
+
+                        System.out.println("最终确认消息发送失败 :( - 循环次数过10000000次，启动保护程序自动退出");
+                        return "最终确认消息发送失败";
                     }
 
                     if (this.messageSentFlag == 1){
                         // flag 归0
                         this.messageSentFlag = 0;
+
+                        // 在持久层存储消息记录(永久)
+                        p2pmessageservice.setP2PmessageOnlyToMySQL(messageNo,uuidFrom,uuidTo,message,messageType);
 
                         System.out.println("最终确认消息发送成功 :)");
                         long endTime=System.currentTimeMillis(); //获取结束时间
@@ -165,6 +177,10 @@ public class WsP2PMessageConcurrencyAndConvergenceService implements FutureCallb
                     } else if(this.messageSentFlag == 2){
                         // flag 归0
                         this.messageSentFlag = 0;
+
+                        // 在redis和持久层存储离线消息
+                        p2pmessageservice.setP2Pmessage(messageNo,uuidFrom,uuidTo,message,messageType,redistemplate);
+
                         System.out.println("最终确认消息发送失败 :( - 全部机器完成了连接检索，但没找到符合的目标用户或消息发送失败");
                         long endTime=System.currentTimeMillis(); //获取结束时间
                         System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
@@ -172,6 +188,10 @@ public class WsP2PMessageConcurrencyAndConvergenceService implements FutureCallb
                     } else if (this.messageSentFlag == 3){
                         // flag 归0
                         this.messageSentFlag = 0;
+
+                        // 在redis和持久层存储离线消息
+                        p2pmessageservice.setP2Pmessage(messageNo,uuidFrom,uuidTo,message,messageType,redistemplate);
+
                         System.out.println("最终确认消息发送失败 :( - 系统超时");
                         long endTime=System.currentTimeMillis(); //获取结束时间
                         System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
@@ -182,6 +202,10 @@ public class WsP2PMessageConcurrencyAndConvergenceService implements FutureCallb
                 }
 
             } catch (Exception e){
+
+                // 在redis和持久层存储离线消息
+                p2pmessageservice.setP2Pmessage(messageNo,uuidFrom,uuidTo,message,messageType,redistemplate);
+
                 System.out.println(e);
 
             } finally {
@@ -192,6 +216,10 @@ public class WsP2PMessageConcurrencyAndConvergenceService implements FutureCallb
 
 
 
+
+
+        // 在redis和持久层存储离线消息
+        p2pmessageservice.setP2Pmessage(messageNo,uuidFrom,uuidTo,message,messageType,redistemplate);
 
         long endTime=System.currentTimeMillis(); //获取结束时间
         System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
