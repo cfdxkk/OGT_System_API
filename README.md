@@ -10,10 +10,10 @@ OGT系统是用来与好友预定游戏时间，或由队长来策划并发布�
     * 支持的的参数有(URL载荷)：
         * `uuid` 根据用户的ID筛选这个用户的所有信息
         * `空` 获取全部用户的全部信息
-2. `localhost:8080/user/register`   用户注册，请求类型：`POST`
+2. `/user/register`   用户注册，请求类型：`POST`
     * 支持的参数有(JavaScript对象/JSON)：
         * `username` + `password`  将会注册这个用户，返回注册结果 (username不允许重复)
-3. `localhost:8080/user/login`   用户登录，请求类型：`POST`
+3. `/user/login`   用户登录，请求类型：`POST`
     * 支持的参数有(JavaScript对象/JSON)：
         * `username` + `password`  如果是注册用户且密码正确，则会返回token，如果不是则返回用户名或密码错误
 4.  `/websocket/{username}/{token}`  开启全双工通信，请求类型：`GET → WebSocket`
@@ -21,9 +21,9 @@ OGT系统是用来与好友预定游戏时间，或由队长来策划并发布�
         * `username` + `token`  传递username和token，用于打开一个带token的WebSocket会话 (后端接收到token后会进行验证)
 5.  `/message/messagefilterandcluster`  用于全双工通信的发送方向服务器发送消息，请求类型：`POST`
     * 支持的参数有(JavaScript对象/JSON):
-        * `uuidfrom` + `uuidto` + `uunoto` + `token` + `messagetype` + `message`  向 `uuidto` 所指向用户推送一条 `messagetype` 类型的消息 `message`
-        * `uuidfrom` + `uuidto` + `token` + `messagetype` + `message`  向 `uuidto` 所指向用户推送一条 `messagetype` 类型的消息 `message`
-        * `uuidfrom` + `uunoto` + `token` + `messagetype` + `message`  向 `uunoto` 所指向用户推送一条 `messagetype` 类型的消息 `message`
+        * `uuidfrom` + `uuidto` + `uunoto` + `token` + `messagetype` + `message`  向 `uuidto` 所指向用户推送一条 `messagetype` 类型的消息
+        * `uuidfrom` + `uuidto` + `token` + `messagetype` + `message`  向 `uuidto` 所指向用户推送一条 `messagetype` 类型的消息
+        * `uuidfrom` + `uunoto` + `token` + `messagetype` + `message`  向 `uunoto` 所指向用户推送一条 `messagetype` 类型的消息
           
 
 ### 启动方法
