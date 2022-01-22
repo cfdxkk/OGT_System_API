@@ -1,9 +1,9 @@
 ## OGT (Order Game Time - 预定游戏时间)
 OGT系统是用来与好友预定游戏时间，或由队长来策划并发布活动的一套系统，是我在东软的毕设
 ***
-此存储库为OGT_System的后端API，由 `Java → Spring-boot` 编写;
+此存储库为OGT_System的后端API，由 `Java → Spring-boot` 编写，未来有由`node`重构的计划;
 </br>
-系统底层类似于 `IM系统`，所有数据都基于消息，不同于一般的网站(Ajax)，我们的通信将会使用 `Websocket` 协议，因为这个协议是 `全双工` 的。
+系统底层类似于 `IM系统`，所有数据都基于消息，不同于一般的网站使用的http请求(Ajax)，我们的消息通信将会使用 `Websocket` 协议，因为这个协议是 `全双工` 的。
 ### API
 注意：除了正常的api外，当前版本也提供了几个用于调试的api
 1. [调试] `localhost:8080/user/info`   获取数据库中用户的所有信息，请求类型：`GET`
