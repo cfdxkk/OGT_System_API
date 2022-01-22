@@ -53,16 +53,15 @@ public class UserController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.OK)
     public String createUser(
-            @RequestParam(name = "username",required = false) String username,
-            @RequestParam(name = "password",required = false) String password
+            @RequestBody UserInfoEntity userinfoentity
     ){
 
-        System.out.println("username is: "+username);
-        System.out.println("password is: "+password);
+        System.out.println("username is: "+userinfoentity.getUsername());
+        System.out.println("password is: "+userinfoentity.getPassword());
 
         String status = "500 something wrong";
-        if ((username != null && !"".equals(username)) && (password != null && !"".equals(password))){
-            int flag = usercreateservice.createUser(username, password);
+        if ((userinfoentity.getUsername() != null && !"".equals(userinfoentity.getUsername())) && (userinfoentity.getPassword() != null && !"".equals(userinfoentity.getPassword()))){
+            int flag = usercreateservice.createUser(userinfoentity.getUsername(), userinfoentity.getPassword());
             if (flag != 0){
                 status = "200 okey!";
             } else {
@@ -77,18 +76,16 @@ public class UserController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public String userLogin(
-            @RequestParam(name = "username",required = false) String username,
-            @RequestParam(name = "password",required = false) String password
+            @RequestBody UserInfoEntity userinfoentity
     ){
         String token = "error password or unregister user"; // 默认token，密码错误或用户未注册
 
-        UserInfoEntity userinfoentity = new UserInfoEntity();
-        userinfoentity.setUsername(username);
-
         List<UserInfoEntity> userinfo = userinfoservice.getByUserInfoEntity(userinfoentity); // 根据用户名获取信息
-        List<UserAuthEntity> userauthinfo = userauthservice.getUserTokenByUserInfoEntity(userinfo.get(0));
-        if (userinfo.get(0).getPassword().equals(password) ){ // 根据获取的用户信息与用户输入的密码比对，看看是否一致
-            token = userauthinfo.get(0).getUUID()+"-"+userauthinfo.get(0).getUserToken(); // 从数据库查询这个用户的uuid和tocken
+        if (userinfo.get(0).getPassword().equals(userinfoentity.getPassword()) ){ // 根据获取的用户信息与用户输入的密码比对，看看是否一致
+            List<UserAuthEntity> userauthinfo = userauthservice.getUserTokenByUserInfoEntity(userinfo.get(0));
+            token = userauthinfo.get(0).getUUID()+"-"+userauthinfo.get(0).getUserToken(); // 从数据库查询这个用户的uuid和token
+
+            System.out.println("token is: " + token);
         }
         return token;
     }

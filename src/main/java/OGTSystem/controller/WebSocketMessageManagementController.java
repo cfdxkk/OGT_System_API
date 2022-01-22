@@ -1,5 +1,6 @@
 package OGTSystem.controller;
 
+import OGTSystem.entity.MessagePushEntity;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.service.*;
 
@@ -24,24 +25,19 @@ public class WebSocketMessageManagementController {
     @PostMapping("/messagefilterandcluster")
     @ResponseStatus(HttpStatus.OK)
     public String sentMessage2User(
-            @RequestParam(name = "uuidfrom",required = false) String uuidFrom,
-            @RequestParam(name = "uuidto",required = false) String uuidTo,
-            @RequestParam(name = "uunoto",required = false) Long uunoTo,
-            @RequestParam(name = "token",required = false) String token,
-            @RequestParam(name = "messagetype",required = false) String messageType,
-            @RequestParam(name = "message",required = false) String message
+            @RequestBody MessagePushEntity messagepushentity
     ) throws IOException {
 
-        System.out.println("消息Controller服务器收到消息了");
-        System.out.println("uuidFrom is: " + uuidFrom);
-        System.out.println("uuidTo is: " + uuidTo);
-        System.out.println("uunoTo is: " + uunoTo);
-        System.out.println("token is: " + token);
-        System.out.println("messageType is: " + messageType);
-        System.out.println("message is: " + message);
 
         // 发送消息
-        return messageservice.sentMessage2User(uuidFrom, uuidTo, uunoTo, token, messageType, message);
+        return messageservice.sentMessage2User(
+                messagepushentity.getUuidfrom(),
+                messagepushentity.getUuidto(),
+                messagepushentity.getUunoto(),
+                messagepushentity.getToken(),
+                messagepushentity.getMessagetype(),
+                messagepushentity.getMessage()
+        );
     }
 }
 
