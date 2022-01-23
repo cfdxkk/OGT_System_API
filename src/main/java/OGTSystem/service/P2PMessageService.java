@@ -130,7 +130,8 @@ public class P2PMessageService {
             int longMessageFlag,
             RedisTemplate<String, String> redistemplate
     ){
-        String messageBody = message + " : " + uuidFrom + " : " + uuidTo + " : " + messageType + " : " + messageNo + " : " + longMessageFlag;
+        long now = new Date().getTime();
+        String messageBody = message + " : " + uuidFrom + " : " + uuidTo + " : " + messageType + " : " + messageNo + " : " + longMessageFlag + " : " + now;
         redistemplate.opsForZSet().add("P2PM-"+uuidTo,messageBody,new Double(messageNo));
     }
 }

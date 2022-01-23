@@ -151,7 +151,7 @@ public class WsP2PMessageConcurrencyAndConvergenceService implements FutureCallb
 
                     System.out.println("messageSentFlag NO.[" + count + "]is: " + this.messageSentFlag);
 
-                    if (count>10000000){
+                    if (count>10000){
 
                         // flag 归0
                         this.messageSentFlag = 0;
