@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OGTSystem.mapper.GroupInfoMapper">
+    <resultMap id="BaseResultMap" type="OGTSystem.entity.GroupInfoEntity">
+        <result column="group_ID" property="groupId" jdbcType="VARCHAR" />
+        <result column="group_NO" property="groupNo" jdbcType="BIGINT" />
+        <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+        <result column="group_avatar" property="groupAvatar" jdbcType="VARCHAR" />
+        <result column="group_Introduction" property="groupIntroduction" jdbcType="VARCHAR" />
+        <result column="group_creator" property="groupCreator" jdbcType="VARCHAR" />
+
+    </resultMap>
+    <!-- 通过GroupId查询单条或多条记录 -->
+    <select id="selectByGroupId" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator
+        FROM group_info
+        <if test="groupId != null">
+            WHERE group_info.group_ID = #{groupId}
+        </if>
+    </select>
+
+    <!-- 通过GroupName模糊查询单条或多条记录 -->
+    <select id="selectByGroupName" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator
+        FROM group_info
+        <if test="groupName != null">
+            WHERE group_info.group_name like #{groupName}
+        </if>
+    </select>
+
+    <!-- 新建群聊 -->
+    <insert id="createGroup">
+        insert into group_info(group_ID, group_name, group_avatar, group_Introduction, group_creator)
+        value(#{groupId}, #{groupName}, #{groupAvatar}, #{groupIntroduction}, #{groupCreator});
+    </insert>
+
+
+</mapper>

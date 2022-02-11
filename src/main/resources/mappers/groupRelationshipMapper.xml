@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OGTSystem.mapper.GroupRelationshipMapper">
+    <resultMap id="BaseResultMap" type="OGTSystem.entity.GroupRelationshipEntity">
+        <result column="relationship_id" property="relationshipId" jdbcType="VARCHAR" />
+        <result column="group_ID" property="groupId" jdbcType="VARCHAR" />
+        <result column="UUID" property="userId" jdbcType="VARCHAR" />
+    </resultMap>
+    <!-- 通过GroupId查询单条或多条记录 -->
+    <select id="selectGroupRelationshipByUUID" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        relationship_id, group_ID, UUID
+        FROM group_relationship
+        <if test="userId != null">
+            WHERE group_relationship.UUID = #{userId}
+        </if>
+    </select>
+
+    <!-- 新建一个 用户<->群 关系记录 -->
+    <insert id="createGroupRelationship">
+        insert into group_relationship(group_ID, UUID)
+        value(#{groupId}, #{userId});
+    </insert>
+
+
+</mapper>
