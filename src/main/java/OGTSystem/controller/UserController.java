@@ -129,6 +129,15 @@ public class UserController {
         return "message is: "+message;
     }
 
+    @CrossOrigin
+    @PostMapping("/tokenCheck")
+    @ResponseStatus(HttpStatus.OK)
+    public Boolean checkUserToken(
+            @RequestBody UserAuthEntity userauthentity
+    ){
+        return userauthservice.userAuthCheck(userauthentity.getUserId(),userauthentity.getUserToken());
+    }
+
 
 
 

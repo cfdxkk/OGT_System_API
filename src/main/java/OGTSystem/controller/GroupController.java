@@ -80,10 +80,23 @@ public class GroupController {
     @CrossOrigin
     @PostMapping("/join")
     @ResponseStatus(HttpStatus.OK)
-    public int createGroup(
+    public List<GroupInfoEntity> createGroup(
             @RequestBody GroupRelationshipEntity grouprelationshipentity
     ){
-        return grouprelationshipservice.createGroupRelationship(grouprelationshipentity);
+
+        List<GroupInfoEntity> groupList = new ArrayList<GroupInfoEntity>();
+
+        if( !("".equals(grouprelationshipentity.getUserId())) ){
+            // join
+            grouprelationshipservice.createGroupRelationship(grouprelationshipentity);
+            // 获取最新的群关系
+            List<GroupRelationshipEntity> groupRelationshipList = grouprelationshipservice.getGroupRelationshipByUUID(grouprelationshipentity.getUserId());
+            // 遍历群关系获取最新的群列表
+            for(GroupRelationshipEntity groupRelationship : groupRelationshipList) {
+                groupList.add(groupinfoservice.getByGroupId(groupRelationship.getGroupId()).get(0));
+            }
+        }
+        return groupList;
     }
 
     @CrossOrigin
@@ -95,7 +108,6 @@ public class GroupController {
         List<GroupRelationshipEntity> groupRelationshipList = grouprelationshipservice.getGroupRelationshipByUUID(userId);
         List<GroupInfoEntity> groupInfoList = new ArrayList<GroupInfoEntity>();
         for(GroupRelationshipEntity groupRelationship : groupRelationshipList) {
-
             groupInfoList.add(groupinfoservice.getByGroupId(groupRelationship.getGroupId()).get(0));
         }
         return groupInfoList;

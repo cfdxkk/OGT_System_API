@@ -15,4 +15,7 @@ public class UserAuthEntity {
     // 用户违规次数
     private int userAttackTime;
 
+    // 方便post请求的uuid
+    private String userId;
+
 }
