@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OGTSystem.mapper.MessageNoGroupMapper">
+    <resultMap id="BaseResultMap" type="OGTSystem.entity.MessageNoGroupEntity">
+        <result column="id" property="id" jdbcType="BIGINT"></result>
+        <result column="group_id" property="groupId" jdbcType="VARCHAR"></result>
+        <result column="message_no" property="messageNo" jdbcType="BIGINT"></result>
+    </resultMap>
+    <!-- 查询单条记录 -->
+    <select id="getMessageNoByGroupId" resultMap="BaseResultMap" parameterType="String">
+        SELECT
+            id, group_id, message_no
+        FROM message_no_group
+        WHERE 1 = 1
+        <if test="groupId != null">
+            AND group_id = #{groupId}
+        </if>
+    </select>
+
+    <insert id="createGroupMessageNo">
+        insert into message_no_group(group_id, message_no)
+        value(#{groupId}, #{messageNo});
+    </insert>
+
+    <update id="setGroupMessageNo">
+        update message_no_group
+        set message_no = #{messageNo}
+        where group_id = #{groupId}
+    </update>
+</mapper>

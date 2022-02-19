@@ -1,8 +1,11 @@
 package OGTSystem.controller;
 
 import OGTSystem.entity.GroupInfoEntity;
+import OGTSystem.entity.GroupMessageEntity;
 import OGTSystem.entity.GroupRelationshipEntity;
+import OGTSystem.message.sender.group.AsynchronousGroupMessageSender;
 import OGTSystem.service.*;
+import OGTSystem.vo.GroupMessageVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
@@ -50,6 +53,16 @@ public class GroupController {
     public void setGroupinfoservice(GroupRelationshipService grouprelationshipservice){
         GroupController.grouprelationshipservice = grouprelationshipservice;
     }
+
+
+    // 创建线程安全的 GroupMessageService 对象
+    private static GroupMessageService groupmessageservice;
+    @Autowired
+    public void setGroupmessageservice(GroupMessageService groupmessageservice){
+        GroupController.groupmessageservice = groupmessageservice;
+    }
+
+
 
     @CrossOrigin
     @PostMapping("/create")
@@ -113,5 +126,12 @@ public class GroupController {
         return groupInfoList;
     }
 
-
+    @CrossOrigin
+    @PostMapping("/message")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean getGroupsList(
+            @RequestBody GroupMessageVo groupmessagevo
+    ){
+        return groupmessageservice.MessageToGroupUser(groupmessagevo);
+    }
 }

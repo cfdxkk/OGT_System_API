@@ -49,7 +49,7 @@ public class MessageService {
 //            HashMap<String,String> wsServerAddressMap
     ) throws IOException {
 
-        long startTime=System.currentTimeMillis();   //获取开始时间
+        long startTime = System.currentTimeMillis();   //获取开始时间
 
 
         // 发送状态

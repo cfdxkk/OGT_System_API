@@ -19,13 +19,13 @@ public class UserAuthService {
     }
 
     public boolean userAuthCheck(String uuid, String token){
-        boolean flag = false;
         UserInfoEntity userinfoentity = new UserInfoEntity();
         userinfoentity.setUUID(uuid);
         List<UserAuthEntity> userauthinfo = userauthinforepository.getUserTokenByUserInfoEntity(userinfoentity);
-        if(userauthinfo.get(0).getUserToken().equals(token)){
-            flag = true;
+        if(userauthinfo.size() != 0 && userauthinfo.get(0).getUserToken().equals(token)){
+            return true;
+        } else {
+            return  false;
         }
-        return  flag;
     }
 }

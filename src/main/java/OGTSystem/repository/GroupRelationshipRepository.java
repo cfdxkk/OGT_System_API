@@ -19,6 +19,10 @@ public class GroupRelationshipRepository {
         return mapper.selectGroupRelationshipByUUID(uuid);
     }
 
+    public List<GroupRelationshipEntity> getGroupRelationshipByGroupId(String groupId){
+        return mapper.selectGroupRelationshipByGroupId(groupId);
+    }
+
     public int createGroupRelationship(GroupRelationshipEntity grouprelationshipentity){
         return mapper.createGroupRelationship(grouprelationshipentity);
     }

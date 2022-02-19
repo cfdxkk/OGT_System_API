@@ -1,10 +1,7 @@
 package OGTSystem.service;
 
-import OGTSystem.entity.MessageNoEntity;
-import OGTSystem.entity.UserAuthEntity;
-import OGTSystem.entity.UserInfoEntity;
+import OGTSystem.entity.MessageNoFriendEntity;
 import OGTSystem.repository.MessageNoFriendRepository;
-import OGTSystem.repository.UserAuthInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -20,15 +17,15 @@ public class MessageNoFriendService {
     @Autowired
     UserInfoService userinfoservice;
 
-    public List<MessageNoEntity> getMessageNoByFriendString(String friend){
+    public List<MessageNoFriendEntity> getMessageNoByFriendString(String friend){
         return messagenofriendrepository.getMessageNoByFriendString(friend);
     }
 
-    public int createMessageNo(MessageNoEntity messagenoentity){
+    public int createMessageNo(MessageNoFriendEntity messagenoentity){
         return messagenofriendrepository.createMessageNo(messagenoentity);
     }
 
-    public int setMessageNo(MessageNoEntity messagenoentity){
+    public int setMessageNo(MessageNoFriendEntity messagenoentity){
         return messagenofriendrepository.setMessageNo(messagenoentity);
     }
 
@@ -51,11 +48,11 @@ public class MessageNoFriendService {
         // 如果找不到(表明两个人第一次通讯或者很久都没有通讯)
         if ("".equals(messageNoRedisTemp) || messageNoRedisTemp == null){
             // 去持久层找
-            List<MessageNoEntity> messageNosMysqlTemp = this.getMessageNoByFriendString(messageNoKey);
+            List<MessageNoFriendEntity> messageNosMysqlTemp = this.getMessageNoByFriendString(messageNoKey);
             if (messageNosMysqlTemp.size() == 0){  // 如果持久层找不到
                 System.out.println("持久层没找到，开始在持久层和redis层新建");
                 // 持久层新建
-                MessageNoEntity messagenoentity = new MessageNoEntity();
+                MessageNoFriendEntity messagenoentity = new MessageNoFriendEntity();
                 messagenoentity.setFriend(messageNoKey);
                 messagenoentity.setMessageNo(0L);
                 this.createMessageNo(messagenoentity);
@@ -76,7 +73,7 @@ public class MessageNoFriendService {
 
             System.out.println("redis层找到了，开始更新持久层数据");
             // 更新持久层数据与redis层统一
-            MessageNoEntity messagenoentity = new MessageNoEntity();
+            MessageNoFriendEntity messagenoentity = new MessageNoFriendEntity();
             messagenoentity.setFriend(messageNoKey);
             messagenoentity.setMessageNo(new Long(messageNoRedisTemp));
             this.setMessageNo(messagenoentity);
@@ -104,7 +101,7 @@ public class MessageNoFriendService {
         Long newMessageNo = (new Long(messageNo))+1;
 
         // 持久层+1
-        MessageNoEntity messagenoentity = new MessageNoEntity();
+        MessageNoFriendEntity messagenoentity = new MessageNoFriendEntity();
         messagenoentity.setFriend(messageNoKey);
         messagenoentity.setMessageNo(newMessageNo);
         this.setMessageNo(messagenoentity);

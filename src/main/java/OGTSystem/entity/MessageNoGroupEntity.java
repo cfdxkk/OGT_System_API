@@ -4,12 +4,12 @@ import lombok.Data;
 
 
 @Data
-public class MessageNoEntity {
+public class MessageNoGroupEntity {
 
     // id
     private Long id;
-    // 两个人的ID索引
-    private String friend;
+    // 群ID索引
+    private String groupId;
     // 消息No
     private Long messageNo;
 

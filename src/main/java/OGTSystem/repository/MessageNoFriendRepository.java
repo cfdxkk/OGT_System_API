@@ -1,10 +1,7 @@
 package OGTSystem.repository;
 
-import OGTSystem.entity.MessageNoEntity;
-import OGTSystem.entity.UserAuthEntity;
-import OGTSystem.entity.UserInfoEntity;
+import OGTSystem.entity.MessageNoFriendEntity;
 import OGTSystem.mapper.MessageNoFriendMapper;
-import OGTSystem.mapper.UserAuthMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,15 +13,15 @@ public class MessageNoFriendRepository {
     @Autowired
     MessageNoFriendMapper messagenofriendmapper;
 
-    public List<MessageNoEntity> getMessageNoByFriendString(String friend){
+    public List<MessageNoFriendEntity> getMessageNoByFriendString(String friend){
         return messagenofriendmapper.getMessageNoByFriendString(friend);
     }
 
-    public int createMessageNo(MessageNoEntity messagenoentity){
+    public int createMessageNo(MessageNoFriendEntity messagenoentity){
         return messagenofriendmapper.createMessageNo(messagenoentity);
     }
 
-    public int setMessageNo(MessageNoEntity messagenoentity){
+    public int setMessageNo(MessageNoFriendEntity messagenoentity){
         return messagenofriendmapper.setMessageNo(messagenoentity);
     }
 }

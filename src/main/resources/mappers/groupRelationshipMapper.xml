@@ -7,13 +7,23 @@
         <result column="group_ID" property="groupId" jdbcType="VARCHAR" />
         <result column="UUID" property="userId" jdbcType="VARCHAR" />
     </resultMap>
-    <!-- 通过GroupId查询单条或多条记录 -->
+    <!-- 通过UUId查询单条或多条记录 -->
     <select id="selectGroupRelationshipByUUID" parameterType="String" resultMap="BaseResultMap">
         SELECT
         relationship_id, group_ID, UUID
         FROM group_relationship
         <if test="userId != null">
             WHERE group_relationship.UUID = #{userId}
+        </if>
+    </select>
+
+    <!-- 通过GroupId查询单条或多条记录 -->
+    <select id="selectGroupRelationshipByGroupId" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        relationship_id, group_ID, UUID
+        FROM group_relationship
+        <if test="groupId != null">
+            WHERE group_relationship.group_ID = #{groupId}
         </if>
     </select>
 

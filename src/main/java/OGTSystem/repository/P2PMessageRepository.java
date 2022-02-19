@@ -1,8 +1,6 @@
 package OGTSystem.repository;
 
-import OGTSystem.entity.MessageNoEntity;
 import OGTSystem.entity.P2PMessageEntity;
-import OGTSystem.mapper.MessageNoFriendMapper;
 import OGTSystem.mapper.P2PMessageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

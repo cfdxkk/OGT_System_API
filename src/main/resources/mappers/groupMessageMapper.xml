@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OGTSystem.mapper.GroupMessageMapper">
+    <resultMap id="BaseResultMap" type="OGTSystem.entity.GroupMessageEntity">
+        <result column="message_id" property="messageId" jdbcType="VARCHAR"></result>
+        <result column="group_id_from" property="groupIdFrom" jdbcType="VARCHAR"></result>
+        <result column="uuid_from" property="uuidFrom" jdbcType="VARCHAR"></result>
+        <result column="message_no_in_group" property="messageNoInGroup" jdbcType="TINYINT"></result>
+        <result column="message_type" property="messageType" jdbcType="VARCHAR"></result>
+        <result column="lang_massage_flag" property="langMessageFlag" jdbcType="TINYINT"></result>
+        <result column="violation_flag" property="violationFlag" jdbcType="TINYINT"></result>
+        <result column="message" property="message" jdbcType="VARCHAR"></result>
+        <result column="sent_datetime" property="sentDate" jdbcType="TIMESTAMP"></result>
+        <result column="edit_datetime" property="editDate" jdbcType="TIMESTAMP"></result>
+        <result column="edit_user_id" property="messageEditorID" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <!-- 根据groupID查询消息 -->
+    <select id="getMessagesByGroupId" resultMap="BaseResultMap" parameterType="String">
+        SELECT
+            message_id, group_id_from, uuid_from,
+            message_no_in_group, message_type, lang_massage_flag, violation_flag,
+            message, sent_datetime, edit_datetime, edit_user_id
+        FROM group_message
+        WHERE 1 = 1
+        <if test="groupId != null">
+            AND group_id_from = #{groupId}
+        </if>
+    </select>
+
+    <!-- 根据entity查询消息 -->
+    <select id="getMessagesByGroupMessageEntity" resultMap="BaseResultMap">
+        SELECT
+            message_id, group_id_from, uuid_from,
+            message_no_in_group, message_type, lang_massage_flag, violation_flag,
+            message, sent_datetime, edit_datetime, edit_user_id
+        FROM group_message
+        WHERE 1 = 1
+        <if test="messageId != null">
+            AND message_id = #{messageId}
+        </if>
+        <if test="groupIdFrom != null">
+            AND group_id_from = #{groupIdFrom}
+        </if>
+        <if test="uuidFrom != null">
+            AND uuid_from = #{uuidFrom}
+        </if>
+        <if test="messageNoInGroup != null">
+            AND message_no_in_group = #{messageNoInGroup}
+        </if>
+        <if test="messageType != null">
+            AND message_type = #{messageType}
+        </if>
+        <if test="langMessageFlag != null">
+            AND lang_massage_flag = #{langMessageFlag}
+        </if>
+        <if test="violationFlag != null">
+            AND violation_flag = #{violationFlag}
+        </if>
+        <if test="message != null">
+            AND message = #{message}
+        </if>
+        <if test="sentDate != null">
+            AND sent_datetime = #{sentDate}
+        </if>
+        <if test="editDate != null">
+            AND edit_datetime = #{editDate}
+        </if>
+        <if test="messageEditorID != null">
+            AND edit_user_id = #{messageEditorID}
+        </if>
+    </select>
+
+    <insert id="createGroupMessage">
+        insert into group_message(
+                    message_id
+                <if test="groupIdFrom != null">
+                    , group_id_from
+                </if>
+                <if test="uuidFrom != null">
+                    , uuid_from
+                </if>
+                <if test="messageNoInGroup != null">
+                    , message_no_in_group
+                </if>
+                <if test="messageType != null">
+                    , message_type
+                </if>
+                <if test="langMessageFlag != null">
+                    , lang_massage_flag
+                </if>
+                <if test="violationFlag != null">
+                    , violation_flag
+                </if>
+                <if test="message != null">
+                    , message
+                </if>
+                <if test="sentDate != null">
+                    , sent_datetime
+                </if>
+                )
+        value(
+                null
+            <if test="groupIdFrom != null">
+                , #{groupIdFrom}
+            </if>
+            <if test="uuidFrom != null">
+                , #{uuidFrom}
+            </if>
+            <if test="messageNoInGroup != null">
+                , #{messageNoInGroup}
+            </if>
+            <if test="messageType != null">
+                , #{messageType}
+            </if>
+            <if test="langMessageFlag != null">
+                , #{langMessageFlag}
+            </if>
+            <if test="violationFlag != null">
+                , #{violationFlag}
+            </if>
+            <if test="message != null">
+                , #{message}
+            </if>
+            <if test="sentDate != null">
+                , #{sentDate}
+            </if>
+            );
+    </insert>
+
+    <update id="setGroupMessage">
+        update group_message
+        set message = #{message}
+        where
+        WHERE 1 = 1
+        <if test="messageId != null">
+            AND message_id = #{messageId}
+        </if>
+        <if test="groupIdFrom != null">
+            AND group_id_from = #{groupIdFrom}
+        </if>
+        <if test="uuidFrom != null">
+            AND uuid_from = #{uuidFrom}
+        </if>
+        <if test="messageNoInGroup != null">
+            AND message_no_in_group = #{messageNoInGroup}
+        </if>
+        <if test="messageType != null">
+            AND message_type = #{messageType}
+        </if>
+        <if test="langMessageFlag != null">
+            AND lang_massage_flag = #{langMessageFlag}
+        </if>
+        <if test="violationFlag != null">
+            AND violation_flag = #{violationFlag}
+        </if>
+        <if test="message != null">
+            AND message = #{message}
+        </if>
+        <if test="sentDate != null">
+            AND sent_datetime = #{sentDate}
+        </if>
+        <if test="editDate != null">
+            AND edit_datetime = #{editDate}
+        </if>
+        <if test="messageEditorID != null">
+            AND edit_user_id = #{messageEditorID}
+        </if>
+    </update>
+</mapper>

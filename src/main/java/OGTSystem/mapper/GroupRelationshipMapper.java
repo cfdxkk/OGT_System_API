@@ -9,7 +9,8 @@ import java.util.List;
 @Mapper
 public interface GroupRelationshipMapper {
 
-    List<GroupRelationshipEntity> selectGroupRelationshipByUUID(String UUID);
+    List<GroupRelationshipEntity> selectGroupRelationshipByUUID(String userId);
+    List<GroupRelationshipEntity> selectGroupRelationshipByGroupId(String groupId);
     int createGroupRelationship(GroupRelationshipEntity group);
 
 }

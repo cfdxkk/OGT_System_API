@@ -7,6 +7,7 @@ import OGTSystem.util.LocalhostTrueIpAddressInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -214,6 +215,55 @@ public class WebSocketController {
                 System.out.println("匹配到目标用户: " + websocketServer.uuid);
                 try {
                     websocketServer.sendMessage(websocketServer.session,"接收到用户: " + uuidFrom + " 发给你的 " + messageType + " 类信息: [" + message + "] 消息顺序号为: " + messageNo);
+                    return "消息发送成功";
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "消息发送失败";
+                }
+            }
+            if (count == connectNumber){
+                return "在本服务器上未找到目标用户";
+            }
+        }
+
+        return "未知错误，发送失败";
+
+    }
+
+
+    /**
+     *
+     * 遍历set，找到目标用户是否连接在当前服务器set中，如果在则发送消息并return成功，如果不在则return不在，如果发送失败就return失败
+     *
+     * @param groupIdFrom
+     * @param uuidFrom
+     * @param uuidTo
+     * @param messageIDInGroup
+     * @param messageType
+     * @param message
+     * @param messageInfo
+     * @return
+     */
+    public String sendMessage2Group(
+            String groupIdFrom,
+            String uuidFrom,
+            String uuidTo,
+            String messageIDInGroup,
+            String messageType,
+            String message,
+            String... messageInfo
+    ){
+
+        int connectNumber = websocketServerSet.size();
+        int count = 0;
+
+        for (WebSocketController websocketServer : websocketServerSet){
+
+            count++;
+            if (websocketServer.uuid.equals(uuidTo)){
+                System.out.println("匹配到目标用户: " + websocketServer.uuid);
+                try {
+                    websocketServer.sendMessage(websocketServer.session,"接收到: " + groupIdFrom + "群的用户: " + uuidFrom + " 发给你的 " + messageType + " 类信息: [" + message + "] 消息顺序号为: " + messageIDInGroup);
                     return "消息发送成功";
                 } catch (Exception e) {
                     e.printStackTrace();

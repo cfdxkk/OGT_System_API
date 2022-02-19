@@ -22,6 +22,7 @@ public class UserInfoService {
         return repository.getByUserInfoEntity(userinfoentity);
     }
 
+    // 设置用户在线情况
     public int setUserWebSocketServiceInfo (String UUID, String terminalType, String status, String userWsServer ){
 
         UserInfoEntity userinfoentity = new UserInfoEntity();

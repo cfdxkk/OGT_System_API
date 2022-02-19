@@ -1,18 +1,12 @@
 package OGTSystem.service;
 
-import OGTSystem.entity.MessageNoEntity;
 import OGTSystem.entity.P2PMessageEntity;
-import OGTSystem.entity.UserInfoEntity;
-import OGTSystem.repository.MessageNoFriendRepository;
 import OGTSystem.repository.P2PMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 @Service
 public class P2PMessageService {
@@ -132,6 +126,6 @@ public class P2PMessageService {
     ){
         long now = new Date().getTime();
         String messageBody = message + " : " + uuidFrom + " : " + uuidTo + " : " + messageType + " : " + messageNo + " : " + longMessageFlag + " : " + now;
-        redistemplate.opsForZSet().add("P2PM-"+uuidTo,messageBody,new Double(messageNo));
+        redistemplate.opsForZSet().add("P2PM-"+uuidTo,messageBody,new Long(messageNo));
     }
 }
