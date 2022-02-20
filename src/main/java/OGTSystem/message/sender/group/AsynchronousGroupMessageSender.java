@@ -29,6 +29,7 @@ public class AsynchronousGroupMessageSender implements FutureCallback<HttpRespon
 
     // 服务器列表map
     private HashMap<String,String> wsServerAddressMap = new HashMap<String,String>();
+
     // 判断发送状态的flag
     private int messageSentFlag = 0;
 
@@ -36,10 +37,12 @@ public class AsynchronousGroupMessageSender implements FutureCallback<HttpRespon
             String groupIdFrom, String uuidFrom, String uuidTo, String messageIDInGroup, String token, String messageType, String message
         ){
 
-        System.out.println("-------------groupIdFrom is: " + groupIdFrom);
-
         // 1.获取ws服务器列表，把结果装在一个map里HashMap<服务器地址, 消息发送状态>
         List<WsServerInfoEntity> wsServerInfoList = wsserverinfoservice.getAllServerAddress();
+//        if (wsServerInfoList.size() == 0) {
+//            System.out.println("最终确认消息发送失败 :( - 没有在线的ws服务器");
+//            return false;
+//        }
         for (WsServerInfoEntity wsServerInfo :wsServerInfoList){
             String wsServerAddress = wsServerInfo.getServerAddress();
             this.wsServerAddressMap.put(wsServerAddress,"");
@@ -78,13 +81,13 @@ public class AsynchronousGroupMessageSender implements FutureCallback<HttpRespon
 
 
 
-            int count = 0;
+            int tryCount = 0;
 
             while (true){
 
-                if (count>10000){
+                if (tryCount>1000){
 
-                    System.out.println("最终确认消息发送失败 :( - 循环次数过10000次，启动保护程序自动退出");
+                    System.out.println("最终确认消息发送失败 :( - 循环次数过1000次，启动保护程序自动退出");
 
                     // flag 归0
                     this.messageSentFlag = 0;
@@ -112,8 +115,8 @@ public class AsynchronousGroupMessageSender implements FutureCallback<HttpRespon
                     return false;
                 }
                 // 休息5毫秒后再进行下一次循环
-                Thread.sleep(5);
-                count++;
+                Thread.sleep(1);
+                tryCount++;
             }
 
 

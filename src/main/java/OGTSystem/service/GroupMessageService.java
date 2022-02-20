@@ -1,17 +1,20 @@
 package OGTSystem.service;
 
+import OGTSystem.controller.WebSocketMessagePullController;
 import OGTSystem.entity.GroupMessageEntity;
 import OGTSystem.entity.GroupRelationshipEntity;
 import OGTSystem.message.sender.group.AsynchronousGroupMessageSender;
 import OGTSystem.repository.GroupMessageRepository;
 import OGTSystem.repository.GroupRelationshipRepository;
 import OGTSystem.vo.GroupMessageVo;
+import OGTSystem.vo.P2PMessageVo;
+import com.sun.tools.javac.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class GroupMessageService {
@@ -55,7 +58,12 @@ public class GroupMessageService {
     }
 
 
-
+    // 创建线程安全的 UserAuthService 对象
+    private static UserAuthService userauthservice;
+    @Autowired
+    public void setUserauthservice(UserAuthService userauthservice){
+        GroupMessageService.userauthservice = userauthservice;
+    }
 
 
 
@@ -133,6 +141,64 @@ public class GroupMessageService {
         groupmessagerepository.createMessage(this.groupMessageVo2Entity(groupmessagevo));
     }
 
+
+    public List<GroupMessageVo> getOfflineMessage(String userId, String groupId, String token){
+
+        if (userauthservice.userAuthCheck(userId,token)){
+            List<GroupMessageVo> offlineGroupMessagesList = new ArrayList<GroupMessageVo>();
+            System.out.println("---------------GM>" + groupId + ">" + userId);
+            Set<ZSetOperations.TypedTuple<String>> offlineMessagesSet = redistemplate.opsForZSet().rangeWithScores("GM>" + groupId + ">" + userId,0,-1);
+            if (offlineMessagesSet != null){
+                for (ZSetOperations.TypedTuple<String> message : offlineMessagesSet){
+                    System.out.println("message set is:" + message.getValue());
+                    String messageString = message.getValue();
+                    // 切割字符串
+                    if (messageString != null && !("".equals(messageString)) ){
+                        System.out.println(".................." + messageString);
+                        String[] messageStringArray = messageString.split(" : ");
+                        if(this.checkFullArray(messageStringArray)){
+                            GroupMessageVo groupmessagevo = new GroupMessageVo();
+
+                            groupmessagevo.setGroupIdFrom(messageStringArray[0]);
+                            groupmessagevo.setUuidFrom(messageStringArray[1]);
+                            groupmessagevo.setUuidTo(messageStringArray[2]);
+                            groupmessagevo.setMessageNoInGroup(messageStringArray[3]);
+                            groupmessagevo.setMessageType(messageStringArray[4]);
+                            System.out.println("lllllllmessageflag is: " + messageStringArray[5]);
+                            groupmessagevo.setLangMessageFlag(Integer.parseInt(messageStringArray[5]));
+                            groupmessagevo.setViolationFlag(Integer.parseInt(messageStringArray[6]));
+                            groupmessagevo.setMessage(messageStringArray[7]);
+                            groupmessagevo.setSentDate(Long.getLong(messageStringArray[8]));
+
+                            offlineGroupMessagesList.add(groupmessagevo);
+                        }
+                    }
+                }
+                // 获取到消息后就清空这个redis缓存了
+                redistemplate.opsForZSet().removeRange("GM>" + groupId + ">" + userId,0,1000000);
+                return offlineGroupMessagesList;
+            } else {
+                System.out.println("redis中没有离线消息");
+                return null;
+            }
+        } else {
+
+            // 用户违规 +1
+            System.out.println("在获取离线消息时token验证未通过");
+            return null;
+        }
+    }
+
+    private boolean checkFullArray(String[] stringArr) {
+        if(stringArr == null || stringArr.length == 0)
+            return false;
+                for (String a : stringArr)
+                    if (a == null || "".equals(a))
+                        return false;
+                            return true;
+    }
+
+
     private GroupMessageEntity groupMessageVo2Entity(GroupMessageVo groupmessagevo) {
         GroupMessageEntity entity = new GroupMessageEntity();
         entity.setGroupIdFrom(groupmessagevo.getGroupIdFrom());
@@ -149,4 +215,7 @@ public class GroupMessageService {
 
         return entity;
     }
+
+
+
 }

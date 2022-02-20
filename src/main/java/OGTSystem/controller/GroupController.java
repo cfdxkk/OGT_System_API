@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -129,9 +130,18 @@ public class GroupController {
     @CrossOrigin
     @PostMapping("/message")
     @ResponseStatus(HttpStatus.OK)
-    public boolean getGroupsList(
+    public boolean sentGroupMessage(
             @RequestBody GroupMessageVo groupmessagevo
     ){
         return groupmessageservice.MessageToGroupUser(groupmessagevo);
+    }
+
+    @CrossOrigin
+    @PostMapping("/offlineMessage")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GroupMessageVo> getGroupOfflineMessage(
+            @RequestBody GroupMessageVo groupmessagevo
+    ){
+        return groupmessageservice.getOfflineMessage(groupmessagevo.getUuidTo(),groupmessagevo.getGroupIdFrom(), groupmessagevo.getToken());
     }
 }
