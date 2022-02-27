@@ -105,11 +105,11 @@ public class WebSocketController {
 
             System.out.println("有新窗口开始监听：" + username + ", 用户token是： " + token + ", 当前在线人数为：" + getOnlineCount());
 
-            try {
-                sendMessage(session,"有新窗口开始监听：" + username + ", 用户token是： " + token + ", 当前在线人数为：" + getOnlineCount());
-            } catch (Exception e) {
-                System.out.println(e);
-            }
+//            try {
+//                sendMessage(session,"有新窗口开始监听：" + username + ", 用户token是： " + token + ", 当前在线人数为：" + getOnlineCount());
+//            } catch (Exception e) {
+//                System.out.println(e);
+//            }
         } else {
             System.out.println("注意：可能有人正在利用websocket接口DDoS攻击服务器！ UUID为"+uuid);
         }
@@ -247,6 +247,7 @@ public class WebSocketController {
     public String sendMessage2Group(
             String groupIdFrom,
             String uuidFrom,
+            String usernameFrom,
             String uuidTo,
             String messageIDInGroup,
             String messageType,
@@ -263,7 +264,11 @@ public class WebSocketController {
             if (websocketServer.uuid.equals(uuidTo)){
                 System.out.println("匹配到目标用户: " + websocketServer.uuid);
                 try {
-                    websocketServer.sendMessage(websocketServer.session,"接收到: " + groupIdFrom + "群的用户: " + uuidFrom + " 发给你的 " + messageType + " 类信息: [" + message + "] 消息顺序号为: " + messageIDInGroup);
+                    String safeMessage = message.replace(" >clip_:< ", "");
+//                    websocketServer.sendMessage(websocketServer.session,"接收到: " + groupIdFrom + "群的用户: " + uuidFrom + " 发给你的 " + messageType + " 类信息: [" + message + "] 消息顺序号为: " + messageIDInGroup);
+                    System.out.println("messag is: " + safeMessage);
+                    websocketServer.sendMessage(websocketServer.session, groupIdFrom + " >clip_:< " + uuidFrom + " >clip_:< " + usernameFrom + " >clip_:< " + messageType + " >clip_:< " + safeMessage + " >clip_:< " + messageIDInGroup);
+
                     return "消息发送成功";
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -285,8 +290,8 @@ public class WebSocketController {
      * @param message
      */
     private void sendMessage(Session session,String message) throws IOException {
-        System.out.println("消息已经回送");
         try {
+            System.out.println("消息已经回送");
             session.getBasicRemote().sendText(message);
         } catch (IOException e) {
             System.out.println("发送消息出错：{}"+ e.getMessage());

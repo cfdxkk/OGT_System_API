@@ -139,9 +139,9 @@ public class GroupController {
     @CrossOrigin
     @PostMapping("/offlineMessage")
     @ResponseStatus(HttpStatus.OK)
-    public List<GroupMessageVo> getGroupOfflineMessage(
+    public HashMap<String, List<GroupMessageVo>> getGroupOfflineMessage(
             @RequestBody GroupMessageVo groupmessagevo
     ){
-        return groupmessageservice.getOfflineMessage(groupmessagevo.getUuidTo(),groupmessagevo.getGroupIdFrom(), groupmessagevo.getToken());
+        return groupmessageservice.getOfflineMessage(groupmessagevo.getUuidTo(), groupmessagevo.getToken());
     }
 }

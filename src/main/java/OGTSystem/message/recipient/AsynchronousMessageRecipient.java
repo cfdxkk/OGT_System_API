@@ -1,9 +1,11 @@
 package OGTSystem.message.recipient;
 
+import OGTSystem.controller.UserController;
 import OGTSystem.controller.WebSocketController;
 import OGTSystem.controller.WebSocketMessagePushController;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.service.UserAuthService;
+import OGTSystem.service.UserInfoService;
 import OGTSystem.util.LocalhostTrueIpAddressInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -33,6 +35,7 @@ public class AsynchronousMessageRecipient {
     public String sentMessage2User(
             @RequestParam(name = "groupIdFrom",required = false) String groupIdFrom,
             @RequestParam(name = "uuidFrom",required = false) String uuidFrom,
+            @RequestParam(name = "usernameFrom",required = false) String usernameFrom,
             @RequestParam(name = "uuidTo",required = false) String uuidTo,
             @RequestParam(name = "messageIDInGroup",required = false) String messageIDInGroup,
             @RequestParam(name = "token",required = false) String token,
@@ -46,23 +49,24 @@ public class AsynchronousMessageRecipient {
         String localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
 
         // 判断传参是否异常
-        if ("".equals(groupIdFrom) || "".equals(uuidFrom) || "".equals(uuidTo) || "".equals(messageIDInGroup) || "".equals(token) || "".equals(messageType) || "".equals(message)){
+        if ("".equals(groupIdFrom) || "".equals(uuidFrom) || "".equals(usernameFrom) || "".equals(uuidTo) || "".equals(messageIDInGroup) || "".equals(token) || "".equals(messageType) || "".equals(message)){
             System.out.println("消息发送失败[传输的参数不足]" + localhostIpAddress);
             return "消息发送失败[传输的参数不足]-" + localhostIpAddress;
         } else {
             // 检查来源用户是否是合法用户
             if (userauthservice.userAuthCheck(uuidFrom,token)){
 
-                // new ws server
-                WebSocketController wsServer = new WebSocketController();
+                    // new ws server
+                    WebSocketController wsServer = new WebSocketController();
 
-                // 发送消息并获得发送结果
-                String messageSentEventResult = wsServer.sendMessage2Group(groupIdFrom,uuidFrom,uuidTo,messageIDInGroup,messageType,message);
+                    // 发送消息并获得发送结果
+                    String messageSentEventResult = wsServer.sendMessage2Group(groupIdFrom,uuidFrom,usernameFrom,uuidTo,messageIDInGroup,messageType,message);
 
-                // 判断，如果消息发送成功则返回
-                if ("消息发送成功".equals(messageSentEventResult)){
-                    return "消息发送成功-" + localhostIpAddress;
-                }
+                    // 判断，如果消息发送成功则返回
+                    if ("消息发送成功".equals(messageSentEventResult)){
+                        return "消息发送成功-" + localhostIpAddress;
+                    }
+
             } else {
 
                 // 记录用户违规次数

@@ -14,6 +14,8 @@ public class GroupMessageVo {
     private String groupIdFrom;
     // 消息来源用户号
     private String uuidFrom;
+    // 消息来源用户名
+    private String usernameFrom;
     // 消息目标用户号
     private String uuidTo;
     // 群聊级别的消息顺序号

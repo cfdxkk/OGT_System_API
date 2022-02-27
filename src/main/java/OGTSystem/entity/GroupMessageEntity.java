@@ -14,6 +14,8 @@ public class GroupMessageEntity {
     private String groupIdFrom;
     // 消息来源用户号
     private String uuidFrom;
+    // 消息来源用户名
+    private String usernameFrom;
     // 群聊级别的消息顺序与
     private String messageNoInGroup;
     // 发送者token

@@ -25,7 +25,7 @@ public class UserController {
         UserController.userauthservice = userauthservice;
     }
 
-    // 创建线程安全的UserAuthService对象
+    // 创建线程安全的 UserInfoService 对象
     private static UserInfoService userinfoservice;
     @Autowired
     public void setUserauthservice(UserInfoService userinfoservice){

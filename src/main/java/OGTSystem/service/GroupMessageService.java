@@ -1,8 +1,11 @@
 package OGTSystem.service;
 
+import OGTSystem.controller.GroupController;
 import OGTSystem.controller.WebSocketMessagePullController;
 import OGTSystem.entity.GroupMessageEntity;
 import OGTSystem.entity.GroupRelationshipEntity;
+import OGTSystem.entity.UserInfoEntity;
+import OGTSystem.message.recipient.AsynchronousMessageRecipient;
 import OGTSystem.message.sender.group.AsynchronousGroupMessageSender;
 import OGTSystem.repository.GroupMessageRepository;
 import OGTSystem.repository.GroupRelationshipRepository;
@@ -65,56 +68,81 @@ public class GroupMessageService {
         GroupMessageService.userauthservice = userauthservice;
     }
 
+    // 创建线程安全的 GroupRelationshipService 对象
+    private static GroupRelationshipService grouprelationshipservice;
+    @Autowired
+    public void setGrouprelationshipservice(GroupRelationshipService grouprelationshipservice){
+        GroupMessageService.grouprelationshipservice = grouprelationshipservice;
+    }
+
+    // 创建线程安全的 UserInfoService 对象
+    private static UserInfoService userinfoservice;
+    @Autowired
+    public void setUserauthservice(UserInfoService userinfoservice){
+        GroupMessageService.userinfoservice = userinfoservice;
+    }
+
 
 
     public boolean MessageToGroupUser (GroupMessageVo groupmessagevo) {
 
         // 1. 检查消息完整性
 
-        // 2. 检查消息是否违规
+        // 2. 检查消息是否违规,并且过滤消息
+        // 消息长度超过295则截取
+        groupmessagevo.setMessage(groupmessagevo.getMessage().length() > 295 ? groupmessagevo.getMessage().substring(0, 290) + "..." : groupmessagevo.getMessage());
 
         // 3. 获得消息顺序号
         String oldGroupMessageNo = messagenogroupservice.getAndCheckAndEditMessageNo(groupmessagevo.getGroupIdFrom(), redistemplate);
         long newGroupMessageNo = (Long.parseLong(oldGroupMessageNo))+1;
 
-
-        // 4. 根据groupIdFrom获取群用户列表
-        List<GroupRelationshipEntity> userList = grouprelationshiprepository.getGroupRelationshipByGroupId(groupmessagevo.getGroupIdFrom());
-
         // 这里理论上可以通过userList获取到这些用户的在线情况 -> select * from xxx where userid in ['foo', 'bar', 'baz']
         // 然后只给在线用户发送消息
-
 
         groupmessagevo.setMessageNoInGroup(Long.toString(newGroupMessageNo));
         groupmessagevo.setSentDate(new Date().getTime());
 
+        // 4. 获取发送者用户信息
+        List<UserInfoEntity> userInfo = userinfoservice.getByUUID(groupmessagevo.getUuidFrom());
+        if (userInfo.size() > 0) {
+            // 4.1 获取发送者用户名
+            String usernameFrom = userInfo.get(0).getUsername();
+            groupmessagevo.setUsernameFrom(usernameFrom);
 
-        // 5. 遍历userList
-        for(GroupRelationshipEntity user: userList) {
-
-            // 和发送者uuid相同，跳过
-            if (user.getUserId().equals(groupmessagevo.getUuidFrom())){
-                continue;
-            }
+            // 5. 根据groupIdFrom获取群用户列表
+            List<GroupRelationshipEntity> userList = grouprelationshiprepository.getGroupRelationshipByGroupId(groupmessagevo.getGroupIdFrom());
 
 
-            // 5.1 向user推送消息并获取消息发送状态
-            boolean groupMessageSentStatus = asynchronousgroupmessagesender.sentMessageToGroupUser(
-                    groupmessagevo.getGroupIdFrom(),
-                    groupmessagevo.getUuidFrom(),
-                    user.getUserId(),
-                    Long.toString(newGroupMessageNo),
-                    groupmessagevo.getToken(),
-                    groupmessagevo.getMessageType(),
-                    groupmessagevo.getMessage()
+            // 6. 遍历userList
+            for(GroupRelationshipEntity user: userList) {
+
+                // 6.1 和发送者uuid相同，跳过
+                if (user.getUserId().equals(groupmessagevo.getUuidFrom())){
+                    continue;
+                }
+
+                // 6.2 向user推送消息并获取消息发送状态
+                boolean groupMessageSentStatus = asynchronousgroupmessagesender.sentMessageToGroupUser(
+                        groupmessagevo.getGroupIdFrom(),
+                        groupmessagevo.getUuidFrom(),
+                        groupmessagevo.getUsernameFrom(),
+                        user.getUserId(),
+                        Long.toString(newGroupMessageNo),
+                        groupmessagevo.getToken(),
+                        groupmessagevo.getMessageType(),
+                        groupmessagevo.getMessage()
                 );
+                System.out.println("向" + user.getUserId() + "的消息" + groupmessagevo.getMessage() + "发送结果为" + groupMessageSentStatus);
+                // 2.2.1 如果消息发送失败
+                if (!groupMessageSentStatus){
+                    // 在redis层存储离线消息记录
+                    this.saveOfflineGroupMessageToRedis(groupmessagevo, user.getUserId(), redistemplate);
+                }
 
-            // 5.1.1 如果消息发送失败
-            if (!groupMessageSentStatus){
-                // 在redis层存储离线消息记录
-                this.saveOfflineGroupMessageToRedis(groupmessagevo, user.getUserId(), redistemplate);
             }
-
+        } else {
+                System.out.println("消息发送失败[获取用户名失败]");
+                return false;
         }
 
         // 6. 在持久层存储离线消息记录
@@ -127,14 +155,18 @@ public class GroupMessageService {
     }
 
 
-    private void saveOfflineGroupMessageToRedis(GroupMessageVo groupmessagevo, String uuidTo, RedisTemplate<String, String> redistemplate){
+    private boolean saveOfflineGroupMessageToRedis(GroupMessageVo groupmessagevo, String uuidTo, RedisTemplate<String, String> redistemplate){
         long now = groupmessagevo.getSentDate();
+
         String groupMessageRedisKey = "GM>" + groupmessagevo.getGroupIdFrom() + ">" + uuidTo;
+        String messageBody = groupmessagevo.getGroupIdFrom() + " : " + groupmessagevo.getUuidFrom() + " : " + groupmessagevo.getUsernameFrom() + " : " + uuidTo + " : " + groupmessagevo.getMessageNoInGroup() + " : " + groupmessagevo.getMessageType() + " : " + groupmessagevo.getLangMessageFlag() + " : " + groupmessagevo.getViolationFlag() + " : " + groupmessagevo.getMessage() + " : " + now;
 
+        System.out.println("offlineMessageKey" + groupMessageRedisKey);
+        System.out.println("offlineMessageBody" + messageBody);
 
-        String messageBody = groupmessagevo.getGroupIdFrom() + " : " + groupmessagevo.getUuidFrom() + " : " + uuidTo + " : " + groupmessagevo.getMessageNoInGroup() + " : " + groupmessagevo.getMessageType() + " : " + groupmessagevo.getLangMessageFlag() + " : " + groupmessagevo.getViolationFlag() + " : " + groupmessagevo.getMessage() + " : " + now;
         redistemplate.opsForZSet().add(groupMessageRedisKey, messageBody,new Long(groupmessagevo.getMessageNoInGroup()));
 
+        return true;
     }
 
     private void saveOfflineGroupMessageToMysql(GroupMessageVo groupmessagevo){
@@ -142,47 +174,67 @@ public class GroupMessageService {
     }
 
 
-    public List<GroupMessageVo> getOfflineMessage(String userId, String groupId, String token){
 
-        if (userauthservice.userAuthCheck(userId,token)){
-            List<GroupMessageVo> offlineGroupMessagesList = new ArrayList<GroupMessageVo>();
-            System.out.println("---------------GM>" + groupId + ">" + userId);
-            Set<ZSetOperations.TypedTuple<String>> offlineMessagesSet = redistemplate.opsForZSet().rangeWithScores("GM>" + groupId + ">" + userId,0,-1);
-            if (offlineMessagesSet != null){
-                for (ZSetOperations.TypedTuple<String> message : offlineMessagesSet){
-                    System.out.println("message set is:" + message.getValue());
-                    String messageString = message.getValue();
-                    // 切割字符串
-                    if (messageString != null && !("".equals(messageString)) ){
-                        System.out.println(".................." + messageString);
-                        String[] messageStringArray = messageString.split(" : ");
-                        if(this.checkFullArray(messageStringArray)){
-                            GroupMessageVo groupmessagevo = new GroupMessageVo();
+    public HashMap<String, List<GroupMessageVo>> getOfflineMessage(String userId, String token){
 
-                            groupmessagevo.setGroupIdFrom(messageStringArray[0]);
-                            groupmessagevo.setUuidFrom(messageStringArray[1]);
-                            groupmessagevo.setUuidTo(messageStringArray[2]);
-                            groupmessagevo.setMessageNoInGroup(messageStringArray[3]);
-                            groupmessagevo.setMessageType(messageStringArray[4]);
-                            System.out.println("lllllllmessageflag is: " + messageStringArray[5]);
-                            groupmessagevo.setLangMessageFlag(Integer.parseInt(messageStringArray[5]));
-                            groupmessagevo.setViolationFlag(Integer.parseInt(messageStringArray[6]));
-                            groupmessagevo.setMessage(messageStringArray[7]);
-                            groupmessagevo.setSentDate(Long.getLong(messageStringArray[8]));
+        if (userauthservice.userAuthCheck(userId,token)){  // 验证用户是否是合规
 
-                            offlineGroupMessagesList.add(groupmessagevo);
+            // 获取这个用户加入的所有群聊信息
+            List<GroupRelationshipEntity> groupInfoList = grouprelationshipservice.getGroupRelationshipByUUID(userId);
+
+            HashMap<String, List<GroupMessageVo>> userofflinemessagelistmap = new HashMap<>();
+
+            if(groupInfoList != null && groupInfoList.size() != 0) {
+                // 遍历用户群聊信息，获得群号，然后根据群号获取这个用户在各个群的离线消息
+                for(GroupRelationshipEntity groupinfo : groupInfoList){
+
+                    List<GroupMessageVo> offlineGroupMessagesList = new ArrayList<GroupMessageVo>();
+                    // 获取这个用户在这个群的离线消息列表
+                    Set<ZSetOperations.TypedTuple<String>> offlineMessagesSet = redistemplate.opsForZSet().rangeWithScores("GM>" + groupinfo.getGroupId() + ">" + userId,0,-1);
+
+                    if (offlineMessagesSet != null && offlineMessagesSet.size() != 0) {
+                        // 遍历离线消息列表，获取每一条消息(从set转为list)
+                        for (ZSetOperations.TypedTuple<String> message : offlineMessagesSet){
+
+                            String messageString = message.getValue();
+                            // 切割字符串
+                            if (messageString != null && !("".equals(messageString)) ){
+                                String[] messageStringArray = messageString.split(" : ");
+                                if(this.checkFullArray(messageStringArray)){
+                                    GroupMessageVo groupmessagevo = new GroupMessageVo();
+
+                                    groupmessagevo.setGroupIdFrom(messageStringArray[0]);
+                                    groupmessagevo.setUuidFrom(messageStringArray[1]);
+                                    groupmessagevo.setUsernameFrom(messageStringArray[2]);
+                                    groupmessagevo.setUuidTo(messageStringArray[3]);
+                                    groupmessagevo.setMessageNoInGroup(messageStringArray[4]);
+                                    groupmessagevo.setMessageType(messageStringArray[5]);
+                                    groupmessagevo.setLangMessageFlag(Integer.parseInt(messageStringArray[6]));
+                                    groupmessagevo.setViolationFlag(Integer.parseInt(messageStringArray[7]));
+                                    groupmessagevo.setMessage(messageStringArray[8]);
+                                    groupmessagevo.setSentDate(Long.getLong(messageStringArray[9]));
+
+                                    offlineGroupMessagesList.add(groupmessagevo);
+                                } else {
+                                    System.out.println("在获取[" + groupinfo.getGroupId() + "]群聊的离线消息时字符串切割出错");
+                                    offlineGroupMessagesList.add(null);
+                                }
+                            }
                         }
+                        // 获取到消息后就清空这个redis缓存了
+                        redistemplate.opsForZSet().removeRange("GM>" + groupinfo.getGroupId() + ">" + userId,0,1000000);
+                        // 把转为list的消息存放到所有群离线消息的集合中
+                        userofflinemessagelistmap.put(groupinfo.getGroupId(), offlineGroupMessagesList);
+                    } else {
+                        System.out.println("在获取[" + groupinfo.getGroupId() + "]群聊的离线消息时获取set为空或出错");
                     }
                 }
-                // 获取到消息后就清空这个redis缓存了
-                redistemplate.opsForZSet().removeRange("GM>" + groupId + ">" + userId,0,1000000);
-                return offlineGroupMessagesList;
+                return userofflinemessagelistmap;
             } else {
-                System.out.println("redis中没有离线消息");
+                System.out.println("用户没有加入任何群聊或在获取用户加入的群聊时出错");
                 return null;
             }
         } else {
-
             // 用户违规 +1
             System.out.println("在获取离线消息时token验证未通过");
             return null;
