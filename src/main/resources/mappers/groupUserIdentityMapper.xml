@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OGTSystem.mapper.GroupUserIdentityMapper">
+    <resultMap id="BaseResultMap" type="OGTSystem.entity.GroupUserIdentityEntity">
+        <result column="group_ID" property="groupId" jdbcType="VARCHAR" />
+        <result column="group_admin_ID" property="groupAdminId" jdbcType="VARCHAR" />
+        <result column="group_admin_type" property="groupAdminType" jdbcType="TINYINT" />
+    </resultMap>
+
+    <!-- 新建群聊特权用户 -->
+    <insert id="insertGroupUserIdentity">
+        insert into group_user_identity(group_ID, group_admin_ID, group_admin_type)
+        value(#{groupId}, #{groupAdminId}, #{groupAdminType});
+    </insert>
+
+
+</mapper>

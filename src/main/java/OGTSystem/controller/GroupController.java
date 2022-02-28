@@ -5,6 +5,8 @@ import OGTSystem.entity.GroupMessageEntity;
 import OGTSystem.entity.GroupRelationshipEntity;
 import OGTSystem.message.sender.group.AsynchronousGroupMessageSender;
 import OGTSystem.service.*;
+import OGTSystem.vo.GroupCreateVo;
+import OGTSystem.vo.GroupInfoVo;
 import OGTSystem.vo.GroupMessageVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -68,17 +70,10 @@ public class GroupController {
     @CrossOrigin
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.OK)
-    public String createGroup(
-            @RequestBody GroupInfoEntity groupinfoentity
+    public GroupCreateVo createGroup(
+            @RequestBody GroupInfoVo groupinfovo
     ){
-
-        String groupId = groupinfoservice.createGroup(groupinfoentity);
-        if ("".equals(groupId)){
-            return "false";
-        } else {
-            return groupId;
-        }
-
+        return groupinfoservice.createGroup(groupinfovo);
     }
 
     @CrossOrigin
