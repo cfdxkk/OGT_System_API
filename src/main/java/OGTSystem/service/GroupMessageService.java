@@ -89,8 +89,10 @@ public class GroupMessageService {
         // 1. 检查消息完整性
 
         // 2. 检查消息是否违规,并且过滤消息
-        // 消息长度超过295则截取
-        groupmessagevo.setMessage(groupmessagevo.getMessage().length() > 295 ? groupmessagevo.getMessage().substring(0, 290) + "..." : groupmessagevo.getMessage());
+        // 如果是普通消息(type == 1)，长度超过295则截取
+        if("1".equals(groupmessagevo.getMessageType())) {
+            groupmessagevo.setMessage(groupmessagevo.getMessage().length() > 295 ? groupmessagevo.getMessage().substring(0, 290) + "..." : groupmessagevo.getMessage());
+        }
 
         // 3. 获得消息顺序号
         String oldGroupMessageNo = messagenogroupservice.getAndCheckAndEditMessageNo(groupmessagevo.getGroupIdFrom(), redistemplate);
@@ -145,8 +147,16 @@ public class GroupMessageService {
                 return false;
         }
 
+
+
         // 6. 在持久层存储离线消息记录
-        this.saveOfflineGroupMessageToMysql(groupmessagevo);
+        if("1".equals(groupmessagevo.getMessageType())) {
+            // 6.1 如果是普通消息，就往消息表存储
+            this.saveOfflineGroupMessageToMysql(groupmessagevo);
+        } else {
+            // 6.2 如果是事件，就往事件表存
+//            this.saveOfflineGroupMessageToMysql(groupmessagevo);
+        }
 
         // 7. 群消息顺序号 + 1
         messagenogroupservice.messageNoPlusOne(groupmessagevo.getGroupIdFrom(), redistemplate, oldGroupMessageNo);

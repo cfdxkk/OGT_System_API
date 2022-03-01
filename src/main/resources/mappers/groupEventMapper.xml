@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OGTSystem.mapper.GroupEventMapper">
+    <resultMap id="BaseResultMap" type="OGTSystem.entity.GroupEventEntity">
+        <result column="event_id" property="eventId" jdbcType="VARCHAR" />
+        <result column="group_id_from" property="groupIdFrom" jdbcType="VARCHAR" />
+        <result column="uuid_from" property="uuidFrom" jdbcType="VARCHAR" />
+
+        <result column="event_start_datetime" property="eventStartDateTime" jdbcType="TIMESTAMP" />
+        <result column="event_end_datetime" property="eventEndDateTime" jdbcType="TIMESTAMP" />
+
+        <result column="lang_event_flag" property="langEventFlag" jdbcType="TINYINT" />
+        <result column="violation_flag" property="violationFlag" jdbcType="TINYINT" />
+
+        <result column="event_color" property="eventColor" jdbcType="VARCHAR" />
+        <result column="event_title" property="eventTitle" jdbcType="VARCHAR" />
+        <result column="event_text" property="eventText" jdbcType="VARCHAR" />
+
+        <result column="sent_datetime" property="sentDate" jdbcType="TIMESTAMP" />
+        <result column="edit_datetime" property="editDate" jdbcType="TIMESTAMP" />
+        <result column="edit_user_id" property="eventEditorID" jdbcType="VARCHAR" />
+
+    </resultMap>
+    <!-- 通过GroupId查询单条或多条记录 -->
+    <select id="selectEventsByGroupId" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+            event_id, group_id_from, uuid_from,
+            event_start_datetime, event_end_datetime,
+            lang_event_flag, violation_flag,
+            event_title, event_text,
+            sent_datetime, edit_datetime, edit_user_id
+        FROM group_event
+        <if test="groupId != null">
+            WHERE group_id_from = #{groupId}
+        </if>
+    </select>
+
+    <!-- 新建事件 -->
+    <insert id="createGroupEvent">
+        insert into group_event(
+            event_id, group_id_from, uuid_from,
+            event_start_datetime, event_end_datetime,
+            lang_event_flag, violation_flag,
+            event_title, event_text,
+            sent_datetime, edit_datetime, edit_user_id
+        )
+        value(
+            null, #{groupIdFrom}, #{uuidFrom},
+            #{eventStartDateTime}, #{eventEndDateTime},
+            #{langEventFlag}, #{violationFlag},
+            #{eventTitle}, #{eventText},
+            #{sentDate}, #{editDate}, #{eventEditorID}
+        );
+    </insert>
+
+
+</mapper>
