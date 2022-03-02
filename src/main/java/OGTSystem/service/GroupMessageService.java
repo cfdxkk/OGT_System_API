@@ -2,13 +2,13 @@ package OGTSystem.service;
 
 import OGTSystem.controller.GroupController;
 import OGTSystem.controller.WebSocketMessagePullController;
-import OGTSystem.entity.GroupMessageEntity;
-import OGTSystem.entity.GroupRelationshipEntity;
-import OGTSystem.entity.UserInfoEntity;
+import OGTSystem.entity.*;
 import OGTSystem.message.recipient.AsynchronousMessageRecipient;
 import OGTSystem.message.sender.group.AsynchronousGroupMessageSender;
+import OGTSystem.repository.GroupEventRepository;
 import OGTSystem.repository.GroupMessageRepository;
 import OGTSystem.repository.GroupRelationshipRepository;
+import OGTSystem.vo.GroupEventVo;
 import OGTSystem.vo.GroupMessageVo;
 import OGTSystem.vo.P2PMessageVo;
 import com.sun.tools.javac.util.StringUtils;
@@ -82,6 +82,26 @@ public class GroupMessageService {
         GroupMessageService.userinfoservice = userinfoservice;
     }
 
+    // 创建线程安全的 GroupEventRepository 对象
+    private static GroupEventRepository groupeventrepository;
+    @Autowired
+    public void setGroupeventrepository(GroupEventRepository groupeventrepository){
+        GroupMessageService.groupeventrepository = groupeventrepository;
+    }
+
+    // 创建线程安全的 GroupUserIdentityService 对象
+    private static GroupUserIdentityService groupuseridentityservice;
+    @Autowired
+    public void setGroupuseridentityservice(GroupUserIdentityService groupuseridentityservice){
+        GroupMessageService.groupuseridentityservice = groupuseridentityservice;
+    }
+
+
+
+
+
+
+
 
 
     public boolean MessageToGroupUser (GroupMessageVo groupmessagevo) {
@@ -152,10 +172,28 @@ public class GroupMessageService {
         // 6. 在持久层存储离线消息记录
         if("1".equals(groupmessagevo.getMessageType())) {
             // 6.1 如果是普通消息，就往消息表存储
-            this.saveOfflineGroupMessageToMysql(groupmessagevo);
+            this.saveGroupMessage2Mysql(groupmessagevo);
         } else {
             // 6.2 如果是事件，就往事件表存
-//            this.saveOfflineGroupMessageToMysql(groupmessagevo);
+            GroupEventEntity groupevententity = new GroupEventEntity();
+            String[] eventStringArray = groupmessagevo.getMessage().split(" >c10y_:< ");
+            groupevententity.setGroupIdFrom(groupmessagevo.getGroupIdFrom());
+            groupevententity.setUuidFrom(groupmessagevo.getUuidFrom());
+            groupevententity.setEventStartDateTime(new Date(Long.parseLong(eventStringArray[0])));
+            groupevententity.setEventEndDateTime(new Date(Long.parseLong(eventStringArray[1])));
+            if (eventStringArray[3].length() > 800){
+                groupevententity.setLangEventFlag(1);
+                groupevententity.setEventText(eventStringArray[3].substring(0, 800) + "..."  );
+            } else {
+                groupevententity.setLangEventFlag(0);
+                groupevententity.setEventText(eventStringArray[3]);
+            }
+            groupevententity.setEventColor(eventStringArray[4]);
+            groupevententity.setEventTitle(eventStringArray[2]);
+            groupevententity.setSentDate(new Date());
+
+            this.saveGroupEvent2Mysql(groupevententity);
+
         }
 
         // 7. 群消息顺序号 + 1
@@ -179,8 +217,12 @@ public class GroupMessageService {
         return true;
     }
 
-    private void saveOfflineGroupMessageToMysql(GroupMessageVo groupmessagevo){
+    private void saveGroupMessage2Mysql(GroupMessageVo groupmessagevo){
         groupmessagerepository.createMessage(this.groupMessageVo2Entity(groupmessagevo));
+    }
+
+    private void saveGroupEvent2Mysql(GroupEventEntity groupevententity){
+        groupeventrepository.createGroupEvent(groupevententity);
     }
 
 
@@ -276,6 +318,52 @@ public class GroupMessageService {
         entity.setMessageEditorID(groupmessagevo.getMessageEditorID());
 
         return entity;
+    }
+
+    public List<GroupEventVo> getEvent(String groupId, String userId, String token) {
+
+        if (userauthservice.userAuthCheck(userId,token)){  // 验证用户安全性
+
+            List<GroupEventEntity> groupEvents = groupeventrepository.getEventsByGroupId(groupId);
+            List<GroupEventVo> groupeventsvo = new ArrayList<GroupEventVo>();
+            for(GroupEventEntity groupevent : groupEvents) {
+                GroupEventVo groupeventvo = new GroupEventVo();
+
+                groupeventvo.setEventId(Long.parseLong(groupevent.getEventId()));
+                groupeventvo.setStartTime(groupevent.getEventStartDateTime().getTime());
+                groupeventvo.setEndTime(groupevent.getEventEndDateTime().getTime());
+                groupeventvo.setEventColor(groupevent.getEventColor());
+
+                UserInfoEntity userinfo = userinfoservice.getByUUID(groupevent.getUuidFrom()).get(0);
+                groupeventvo.setUserName(userinfo.getUsername());
+                groupeventvo.setUserAvatar(userinfo.getUserAvatar());
+
+                GroupUserIdentityEntity groupuseridentityentitiy = new GroupUserIdentityEntity();
+                groupuseridentityentitiy.setGroupId(groupevent.getGroupIdFrom());
+                groupuseridentityentitiy.setGroupAdminId(groupevent.getUuidFrom());
+                List<GroupUserIdentityEntity> useridentity = groupuseridentityservice.getUserIdentity(groupuseridentityentitiy);
+                if(useridentity.size() > 0) {
+                    groupeventvo.setUserType(useridentity.get(0).getGroupAdminType());
+                } else {
+                    groupeventvo.setUserType(0);
+                }
+
+                groupeventvo.setEventTitle(groupevent.getEventTitle());
+                groupeventvo.setEventText(groupevent.getEventText());
+
+                groupeventvo.setEventImg(new ArrayList<>());
+
+                groupeventsvo.add(groupeventvo);
+            }
+
+            return groupeventsvo;
+
+        } else {
+
+            // 记录用户违规操作
+
+            return null;
+        }
     }
 
 

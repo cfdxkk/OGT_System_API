@@ -5,9 +5,7 @@ import OGTSystem.entity.GroupMessageEntity;
 import OGTSystem.entity.GroupRelationshipEntity;
 import OGTSystem.message.sender.group.AsynchronousGroupMessageSender;
 import OGTSystem.service.*;
-import OGTSystem.vo.GroupCreateVo;
-import OGTSystem.vo.GroupInfoVo;
-import OGTSystem.vo.GroupMessageVo;
+import OGTSystem.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
@@ -138,5 +136,14 @@ public class GroupController {
             @RequestBody GroupMessageVo groupmessagevo
     ){
         return groupmessageservice.getOfflineMessage(groupmessagevo.getUuidTo(), groupmessagevo.getToken());
+    }
+
+    @CrossOrigin
+    @PostMapping("/event")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GroupEventVo> getGroupEvent(
+            @RequestBody GroupEventGetVo groupeventgetvo
+    ){
+        return groupmessageservice.getEvent(groupeventgetvo.getGroupId(), groupeventgetvo.getUserId(), groupeventgetvo.getToken());
     }
 }

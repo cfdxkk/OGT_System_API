@@ -28,7 +28,7 @@
             event_id, group_id_from, uuid_from,
             event_start_datetime, event_end_datetime,
             lang_event_flag, violation_flag,
-            event_title, event_text,
+            event_color, event_title, event_text,
             sent_datetime, edit_datetime, edit_user_id
         FROM group_event
         <if test="groupId != null">
@@ -42,14 +42,14 @@
             event_id, group_id_from, uuid_from,
             event_start_datetime, event_end_datetime,
             lang_event_flag, violation_flag,
-            event_title, event_text,
+            event_color, event_title, event_text,
             sent_datetime, edit_datetime, edit_user_id
         )
         value(
             null, #{groupIdFrom}, #{uuidFrom},
             #{eventStartDateTime}, #{eventEndDateTime},
             #{langEventFlag}, #{violationFlag},
-            #{eventTitle}, #{eventText},
+            #{eventColor}, #{eventTitle}, #{eventText},
             #{sentDate}, #{editDate}, #{eventEditorID}
         );
     </insert>

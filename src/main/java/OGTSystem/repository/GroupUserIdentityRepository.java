@@ -20,4 +20,8 @@ public class GroupUserIdentityRepository {
         return mapper.insertGroupUserIdentity(groupuseridentityentity);
     }
 
+    public List<GroupUserIdentityEntity> getUserIdentity(GroupUserIdentityEntity groupuseridentityentity) {
+        return mapper.selectUserIdentity(groupuseridentityentity);
+    }
+
 }

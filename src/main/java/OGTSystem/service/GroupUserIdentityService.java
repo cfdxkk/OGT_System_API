@@ -20,5 +20,9 @@ public class GroupUserIdentityService {
         return groupuseridentityrepository.createGroupUserIdentity(groupuseridentityentity);
     }
 
+    public List<GroupUserIdentityEntity> getUserIdentity(GroupUserIdentityEntity groupuseridentityentity){
+        return groupuseridentityrepository.getUserIdentity(groupuseridentityentity);
+    }
+
 
 }

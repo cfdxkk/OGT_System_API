@@ -11,4 +11,7 @@ public interface GroupUserIdentityMapper {
 
     int insertGroupUserIdentity(GroupUserIdentityEntity group);
 
+    List<GroupUserIdentityEntity> selectUserIdentity(GroupUserIdentityEntity entity);
+
+
 }

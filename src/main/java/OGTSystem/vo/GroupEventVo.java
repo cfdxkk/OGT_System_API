@@ -21,7 +21,7 @@ public class GroupEventVo {
     // 发布事件者用户头像
     private String userAvatar;
     // 发布事件者在群聊中的角色
-    private String userType;
+    private int userType;
     // 事件标题
     private String eventTitle;
     // 事件体

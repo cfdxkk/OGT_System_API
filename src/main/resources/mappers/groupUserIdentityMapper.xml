@@ -11,8 +11,22 @@
     <!-- 新建群聊特权用户 -->
     <insert id="insertGroupUserIdentity">
         insert into group_user_identity(group_ID, group_admin_ID, group_admin_type)
-        value(#{groupId}, #{groupAdminId}, #{groupAdminType});
+            value(#{groupId}, #{groupAdminId}, #{groupAdminType});
     </insert>
+
+    <!-- 新建群聊特权用户 -->
+    <select id="selectUserIdentity" resultMap="BaseResultMap">
+        SELECT group_ID, group_admin_ID, group_admin_type
+        FROM group_user_identity
+        <where>
+            <if test="groupId != null">
+                group_ID = #{groupId}
+            </if>
+            <if test="groupAdminId != null">
+                AND group_admin_ID = #{groupAdminId}
+            </if>
+        </where>
+    </select>
 
 
 </mapper>
