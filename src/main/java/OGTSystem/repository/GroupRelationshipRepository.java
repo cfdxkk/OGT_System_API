@@ -27,4 +27,8 @@ public class GroupRelationshipRepository {
         return mapper.createGroupRelationship(grouprelationshipentity);
     }
 
+    public int removeByGroupId(String groupId) {
+        return mapper.removeByGroupId(groupId);
+    }
+
 }

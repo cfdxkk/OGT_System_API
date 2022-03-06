@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class UserInfoEntity {
+public class UserInfoEditEntity {
     // user_often_edit table
     // 唯一用户ID
     private String userId;
@@ -46,5 +46,10 @@ public class UserInfoEntity {
     private Date userBirthday;
     // 用户住址
     private String userLocation;
+
+    //adminId
+    private String adminUserId;
+    //adminToken
+    private String adminToken;
 
 }

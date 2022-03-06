@@ -4,7 +4,7 @@ import lombok.Data;
 
 
 @Data
-public class GroupInfoEntity {
+public class GroupInfoEditEntity {
 
     // id 群号
     private String groupId;
@@ -21,4 +21,9 @@ public class GroupInfoEntity {
     // 热门群Flag
     private String hotGroupFlag;
 
+
+    // 管理员ID
+    private String adminUserId;
+    // 管理员Token
+    private String adminToken;
 }

@@ -146,4 +146,12 @@ public class GroupController {
     ){
         return groupmessageservice.getEvent(groupeventgetvo.getGroupId(), groupeventgetvo.getUserId(), groupeventgetvo.getToken());
     }
+
+    @CrossOrigin
+    @GetMapping("/hotGroupList")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GroupInfoEntity> getHotGroupList(
+    ){
+        return groupinfoservice.getHotGroup();
+    }
 }

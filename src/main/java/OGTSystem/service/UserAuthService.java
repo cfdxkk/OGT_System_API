@@ -20,7 +20,7 @@ public class UserAuthService {
 
     public boolean userAuthCheck(String uuid, String token){
         UserInfoEntity userinfoentity = new UserInfoEntity();
-        userinfoentity.setUUID(uuid);
+        userinfoentity.setUserId(uuid);
         List<UserAuthEntity> userauthinfo = userauthinforepository.getUserTokenByUserInfoEntity(userinfoentity);
         if(userauthinfo.size() != 0 && userauthinfo.get(0).getUserToken().equals(token)){
             return true;

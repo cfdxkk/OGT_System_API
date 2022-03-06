@@ -61,12 +61,14 @@ public class GroupInfoService {
                 return null;
             } else {
 
+
                 GroupInfoEntity groupinfoentity = new GroupInfoEntity();
                 groupinfoentity.setGroupId(groupId);
                 groupinfoentity.setGroupCreator(groupinfovo.getGroupCreator());
                 groupinfoentity.setGroupName(groupinfovo.getGroupName());
                 groupinfoentity.setGroupIntroduction(groupinfovo.getGroupIntroduction());
                 repository.createGroup(groupinfoentity);
+
 
 
                 // 一旦创建成功，则把创建者加入群聊关系数据库，人后在特殊权限用户表记录这个群里拥有特殊权限的用户，并返回这个用户加入的所有群聊列表
@@ -82,7 +84,6 @@ public class GroupInfoService {
                 // 遍历群关系获取最新的群列表，然后塞到list里
                 for(GroupRelationshipEntity groupRelationship : groupRelationshipList) {
                     // entity2Vo
-
                     GroupInfoEntity groupInfoE = groupinfoservice.getByGroupId(groupRelationship.getGroupId()).get(0);
                     GroupInfoVo groupinfoV = new GroupInfoVo();
                     groupinfoV.setGroupId(groupInfoE.getGroupId());
@@ -133,6 +134,10 @@ public class GroupInfoService {
         } else {
             return repository.getByGroupId(groupId);
         }
+    }
+
+    public List<GroupInfoEntity> getHotGroup(){
+        return repository.getHotGroup();
     }
 
 

@@ -55,4 +55,31 @@
     </insert>
 
 
+    <!-- 编辑事件 -->
+    <update id="editGroupEvent">
+        update group_event
+        <set>
+            edit_datetime = now()
+            <if test="eventColor != null and eventColor != ''">
+                , event_color = #{eventColor}
+            </if>
+            <if test="eventTitle != null and eventTitle != ''">
+                , event_title = #{eventTitle}
+            </if>
+            <if test="eventText != null and eventText != ''">
+                , event_text = #{eventText}
+            </if>
+            <if test="adminUserId != null and adminUserId != ''">
+                , edit_user_id = #{adminUserId}
+            </if>
+        </set>
+        where event_id = #{eventId}
+    </update>
+
+    <delete id="removeByEventId" parameterType="String">
+        delete from group_event
+        where event_id = #{groupId}
+    </delete>
+
+
 </mapper>

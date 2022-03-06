@@ -2,9 +2,38 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="OGTSystem.mapper.UserOftenEditMapper">
+    <resultMap id="SafeResultMap" type="OGTSystem.entity.UserSafeInfoEntity">
+        <result column="UID" property="userId" jdbcType="VARCHAR" />
+        <result column="UUNO" property="userNo" jdbcType="BIGINT" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+        <!--        <result column="password" property="password" jdbcType="VARCHAR" />-->
+        <!--        <result column="privacy_auth" property="privacyAuth" jdbcType="VARCHAR" />-->
+        <result column="user_avatar" property="userAvatar" jdbcType="VARCHAR" />
+        <result column="user_info" property="userInfo" jdbcType="VARCHAR" />
+
+        <result column="ws_status" property="wsStatus" jdbcType="CHAR" />
+        <result column="ws_android_phone_status" property="wsAndroidPhone" jdbcType="VARCHAR" />
+        <result column="ws_ios_phone_status" property="wsIosPhone" jdbcType="VARCHAR" />
+        <result column="ws_android_pad_status" property="wsAndroidPad" jdbcType="VARCHAR" />
+        <result column="ws_ios_pad_status" property="wsIosPad" jdbcType="VARCHAR" />
+        <result column="ws_windows_status" property="wsWindows" jdbcType="VARCHAR" />
+        <result column="ws_macos_status" property="wsMacos" jdbcType="VARCHAR" />
+        <result column="ws_web_browser_status" property="wsWebBrowser" jdbcType="VARCHAR" />
+        <result column="ws_linux_status" property="wsLinux" jdbcType="VARCHAR" />
+        <result column="user_ws_server" property="userWsServer" jdbcType="VARCHAR" />
+
+        <result column="user_admin_flag" property="userAdminFlag" jdbcType="VARCHAR"/>
+        <result column="user_ban_flag" property="userBanFlag" jdbcType="VARCHAR"/>
+
+        <result column="user_email" property="userEmail" jdbcType="VARCHAR" />
+        <result column="user_sex" property="userSex" jdbcType="VARCHAR" />
+        <result column="user_birthday" property="userBirthday" jdbcType="DATE" />
+        <result column="user_location" property="userLocation" jdbcType="VARCHAR" />
+    </resultMap>
+
     <resultMap id="BaseResultMap" type="OGTSystem.entity.UserInfoEntity">
-        <result column="UID" property="UUID" jdbcType="VARCHAR" />
-        <result column="UUNO" property="UUNO" jdbcType="BIGINT" />
+        <result column="UID" property="userId" jdbcType="VARCHAR" />
+        <result column="UUNO" property="userNo" jdbcType="BIGINT" />
         <result column="username" property="username" jdbcType="VARCHAR" />
         <result column="password" property="password" jdbcType="VARCHAR" />
         <result column="privacy_auth" property="privacyAuth" jdbcType="VARCHAR" />
@@ -22,6 +51,8 @@
         <result column="ws_linux_status" property="wsLinux" jdbcType="VARCHAR" />
         <result column="user_ws_server" property="userWsServer" jdbcType="VARCHAR" />
 
+        <result column="user_admin_flag" property="userAdminFlag" jdbcType="VARCHAR"/>
+        <result column="user_ban_flag" property="userBanFlag" jdbcType="VARCHAR"/>
 
         <result column="user_email" property="userEmail" jdbcType="VARCHAR" />
         <result column="user_sex" property="userSex" jdbcType="VARCHAR" />
@@ -29,14 +60,16 @@
         <result column="user_location" property="userLocation" jdbcType="VARCHAR" />
     </resultMap>
     <!-- 通过UUID查询单条或多条记录 -->
-    <select id="selectByUUId" parameterType="String" resultMap="BaseResultMap">
+    <select id="selectByUUId" parameterType="String" resultMap="SafeResultMap">
         SELECT
             UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info,
             ws_status, ws_android_phone_status, ws_ios_phone_status, ws_android_pad_status, ws_ios_pad_status, ws_windows_status, ws_macos_status, ws_web_browser_status, ws_linux_status, user_ws_server,
+            user_admin_flag, user_ban_flag,
             user_email, user_sex, user_birthday, user_location
         FROM user_often_edit UOE left join user_not_often_edit UNOE ON UOE.UUID = UNOE.UUID
+        WHERE 1 = 1
         <if test="uuid != null">
-            WHERE UOE.UUID = #{uuid}
+            AND UOE.UUID = #{uuid}
         </if>
     </select>
 
@@ -45,54 +78,96 @@
         SELECT
         UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info,
         ws_status, ws_android_phone_status, ws_ios_phone_status, ws_android_pad_status, ws_ios_pad_status, ws_windows_status, ws_macos_status, ws_web_browser_status, ws_linux_status, user_ws_server,
+        user_admin_flag, user_ban_flag,
         user_email, user_sex, user_birthday, user_location
         FROM user_often_edit UOE left join user_not_often_edit UNOE ON UOE.UUID = UNOE.UUID
-        WHERE 1 = 1
-        <if test="UUID != null">
-            AND UOE.UUID = #{UUID}
-        </if>
-        <if test="UUNO != null">
-            AND UOE.UUNO = #{UUNO}
-        </if>
-        <if test="username != null">
-            AND username = #{username}
-        </if>
+        <where>
+            <if test="userId != '' and userId != null">
+                AND UOE.UUID = #{userId}
+            </if>
+            <if test="userNo != '' and userNo != null">
+                AND UOE.UUNO = #{userNo}
+            </if>
+            <if test="username != '' and username != null">
+                AND UOE.username = #{username}
+            </if>
+        </where>
     </select>
 
     <insert id="createUser">
         insert into user_often_edit(UUID, username, password)
-        value(#{UUID,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR});
+        value(#{userId,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR});
     </insert>
 
     <update id="setUserWebSocketServiceInfo">
         update user_often_edit
         set
-            ws_status = #{wsStatus,jdbcType=VARCHAR},
-            user_ws_server = #{userWsServer,jdbcType=VARCHAR}
-            <if test="wsAndroidPhone != null">
-                , ws_android_phone_status = #{wsAndroidPhone}
-            </if>
-            <if test="wsIosPhone != null">
-                , ws_ios_phone_status = #{wsIosPhone}
-            </if>
-            <if test="wsAndroidPad != null">
-                , ws_android_pad_status = #{wsAndroidPad}
-            </if>
-            <if test="wsIosPad != null">
-                , ws_ios_pad_status = #{wsIosPad}
-            </if>
-            <if test="wsWindows != null">
-                , ws_windows_status = #{wsWindows}
-            </if>
-            <if test="wsMacos != null">
-                , ws_macos_status = #{wsMacos}
-            </if>
-            <if test="wsWebBrowser != null">
-                , ws_web_browser_status = #{wsWebBrowser}
-            </if>
-            <if test="wsLinux != null">
-                , ws_linux_status = #{wsLinux}
-            </if>
-        where UUID = #{UUID,jdbcType=VARCHAR}
+        ws_status = #{wsStatus,jdbcType=VARCHAR},
+        user_ws_server = #{userWsServer,jdbcType=VARCHAR}
+        <if test="wsAndroidPhone != null">
+            , ws_android_phone_status = #{wsAndroidPhone}
+        </if>
+        <if test="wsIosPhone != null">
+            , ws_ios_phone_status = #{wsIosPhone}
+        </if>
+        <if test="wsAndroidPad != null">
+            , ws_android_pad_status = #{wsAndroidPad}
+        </if>
+        <if test="wsIosPad != null">
+            , ws_ios_pad_status = #{wsIosPad}
+        </if>
+        <if test="wsWindows != null">
+            , ws_windows_status = #{wsWindows}
+        </if>
+        <if test="wsMacos != null">
+            , ws_macos_status = #{wsMacos}
+        </if>
+        <if test="wsWebBrowser != null">
+            , ws_web_browser_status = #{wsWebBrowser}
+        </if>
+        <if test="wsLinux != null">
+            , ws_linux_status = #{wsLinux}
+        </if>
+        where UUID = #{userId,jdbcType=VARCHAR}
     </update>
+
+    <update id="setUserInfoInUserOftenEdit">
+        update user_often_edit
+        <set>
+            UUID = #{userId}
+            <if test="username != null and username != ''">
+                , username = #{username}
+            </if>
+            <if test="password != null and password != ''">
+                , password = #{password}
+            </if>
+            <if test="userInfo != null and userInfo != ''">
+                , user_info = #{userInfo}
+            </if>
+        </set>
+        where UUID = #{userId}
+    </update>
+
+    <update id="setUserBaned">
+        update user_often_edit
+        set user_ban_flag = "1"
+        where UUID = #{userId}
+    </update>
+
+    <update id="setUserUnBaned">
+        update user_often_edit
+        set user_ban_flag = "0"
+        where UUID = #{userId}
+    </update>
+
+    <delete id="removeUser">
+        delete from user_often_edit
+        where UUID = #{userId}
+    </delete>
+
+    <delete id="removeUserInAuth">
+        delete from user_auth
+        where UUID = #{userId}
+    </delete>
+
 </mapper>

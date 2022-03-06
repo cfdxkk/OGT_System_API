@@ -33,5 +33,11 @@
         value(#{groupId}, #{userId});
     </insert>
 
+    <!-- 根据groupId移除 用户<->群 关系记录 -->
+    <delete id="removeByGroupId" parameterType="String">
+        delete from group_relationship
+        where group_id = #{groupId}
+    </delete>
+
 
 </mapper>

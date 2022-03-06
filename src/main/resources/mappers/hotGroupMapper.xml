@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OGTSystem.mapper.HotGroupMapper">
+    <resultMap id="BaseResultMap" type="OGTSystem.entity.HotGroupEntity">
+        <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    </resultMap>
+    <!-- 给用户看的热门群聊表 -->
+    <select id="selectHotGroup" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        group_id
+        FROM hot_group
+        <where>
+            delete_flag = 0
+            <if test="groupId != null">
+                group_id = #{groupId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 给管理员看的热门群聊表 -->
+    <select id="selectAllHotGroup" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        group_id
+        FROM hot_group
+        <where>
+            <if test="groupId != null">
+                group_id = #{groupId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 添加热门群聊 -->
+    <insert id="createHotGroup">
+        insert into group_event(
+            group_id, delete_flag
+        )
+        value(
+            #{groupId}, 0
+        );
+    </insert>
+
+
+    <!-- 删除hot group -->
+    <delete id="deleteHotGroup">
+        delete from group_event
+        where group_id = #{groupId}
+    </delete>
+
+
+</mapper>

@@ -91,7 +91,7 @@ public class WsP2PMessageConcurrencyAndConvergenceService implements FutureCallb
 
         // 检测对方是否在线...
         UserInfoEntity userinfoentity = new UserInfoEntity();
-        userinfoentity.setUUNO(uunoTo);
+        userinfoentity.setUserNo(uunoTo);
         List<UserInfoEntity> userWsStatus = userinfoservice.getByUserInfoEntity(userinfoentity);
 
         if ( userWsStatus.size() == 0 || "0".equals(userWsStatus.get(0).getWsStatus())){  // 如果不在线，则在redis和持久层存储离线消息

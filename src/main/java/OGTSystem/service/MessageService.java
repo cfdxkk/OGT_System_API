@@ -1,6 +1,7 @@
 package OGTSystem.service;
 
 import OGTSystem.entity.UserInfoEntity;
+import OGTSystem.entity.UserSafeInfoEntity;
 import OGTSystem.entity.WsServerInfoEntity;
 import OGTSystem.util.LocalhostTrueIpAddressInitializer;
 import org.apache.http.HttpResponse;
@@ -86,10 +87,10 @@ public class MessageService {
             // 如果只传过来uunoTo的情况下，会根据uunoTo获取uuidTo
             if ("".equals(uuidTo)) {
                 UserInfoEntity userinfoentity = new UserInfoEntity();
-                userinfoentity.setUUNO(uunoTo);
+                userinfoentity.setUserNo(uunoTo);
                 List<UserInfoEntity> userInfo = userinfoservice.getByUserInfoEntity(userinfoentity);
                 if (userInfo.size() > 0) {
-                    uuidTo = userInfo.get(0).getUUID();
+                    uuidTo = userInfo.get(0).getUserId();
                 } else {
                     System.out.println("最终确认消息发送失败 :( - 用户NO错误");
                     messageSentStatus = "最终确认消息发送失败";
@@ -97,20 +98,20 @@ public class MessageService {
             }
 
             // 根据uuidFrom获取uunoFrom
-            List<UserInfoEntity> userinfo1 =  userinfoservice.getByUUID(uuidFrom);
+            List<UserSafeInfoEntity> userinfo1 =  userinfoservice.getByUUID(uuidFrom);
             Long uunoFrom = null;
             if (userinfo1.size()>0){
-                uunoFrom = userinfo1.get(0).getUUNO();
+                uunoFrom = userinfo1.get(0).getUserNo();
             } else {
                 System.out.println("最终确认消息发送失败 :( - 通过uuidFrom未能找到uunofrom");
                 messageSentStatus = "最终确认消息发送失败";
             }
 
             // 根据uuidTo获取uunoTo
-            List<UserInfoEntity> userinfo2 =  userinfoservice.getByUUID(uuidTo);
+            List<UserSafeInfoEntity> userinfo2 =  userinfoservice.getByUUID(uuidTo);
             Long trueUunoTo = null;
             if (userinfo2.size()>0){
-                trueUunoTo = userinfo2.get(0).getUUNO();
+                trueUunoTo = userinfo2.get(0).getUserNo();
             } else {
                 System.out.println("最终确认消息发送失败 :( - 通过uuidFrom未能找到uunofrom");
                 messageSentStatus = "最终确认消息发送失败";

@@ -125,7 +125,7 @@ public class GroupMessageService {
         groupmessagevo.setSentDate(new Date().getTime());
 
         // 4. 获取发送者用户信息
-        List<UserInfoEntity> userInfo = userinfoservice.getByUUID(groupmessagevo.getUuidFrom());
+        List<UserSafeInfoEntity> userInfo = userinfoservice.getByUUID(groupmessagevo.getUuidFrom());
         if (userInfo.size() > 0) {
             // 4.1 获取发送者用户名
             String usernameFrom = userInfo.get(0).getUsername();
@@ -334,7 +334,7 @@ public class GroupMessageService {
                 groupeventvo.setEndTime(groupevent.getEventEndDateTime().getTime());
                 groupeventvo.setEventColor(groupevent.getEventColor());
 
-                UserInfoEntity userinfo = userinfoservice.getByUUID(groupevent.getUuidFrom()).get(0);
+                UserSafeInfoEntity userinfo = userinfoservice.getByUUID(groupevent.getUuidFrom()).get(0);
                 groupeventvo.setUserName(userinfo.getUsername());
                 groupeventvo.setUserAvatar(userinfo.getUserAvatar());
 

@@ -2,6 +2,7 @@ package OGTSystem.controller;
 
 import OGTSystem.entity.UserAuthEntity;
 import OGTSystem.entity.UserInfoEntity;
+import OGTSystem.entity.UserSafeInfoEntity;
 import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserCreateService;
 import OGTSystem.service.UserInfoService;
@@ -42,11 +43,15 @@ public class UserController {
     @CrossOrigin
     @GetMapping("/info")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserInfoEntity> getByUUID(
+    public UserSafeInfoEntity getByUUID(
             @RequestParam(name = "uuid",required = false) String uuid
     ){
-        List<UserInfoEntity> userInfo = userinfoservice.getByUUID(uuid);
-        return userInfo;
+        List<UserSafeInfoEntity> userInfo = userinfoservice.getByUUID(uuid);
+        if (userInfo.size() > 0) {
+            return userInfo.get(0);
+        } else {
+            return null;
+        }
     }
 
     @CrossOrigin
@@ -80,6 +85,7 @@ public class UserController {
     ){
         String token = "error password or unregister user"; // 默认token，密码错误或用户未注册
 
+        userinfoentity.setUserId("");
         List<UserInfoEntity> userinfo = userinfoservice.getByUserInfoEntity(userinfoentity); // 根据用户名获取信息
         if (userinfo.get(0).getPassword().equals(userinfoentity.getPassword()) ){ // 根据获取的用户信息与用户输入的密码比对，看看是否一致
             List<UserAuthEntity> userauthinfo = userauthservice.getUserTokenByUserInfoEntity(userinfo.get(0));

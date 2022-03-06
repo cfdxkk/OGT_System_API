@@ -13,4 +13,6 @@ public interface GroupRelationshipMapper {
     List<GroupRelationshipEntity> selectGroupRelationshipByGroupId(String groupId);
     int createGroupRelationship(GroupRelationshipEntity group);
 
+    int removeByGroupId(String groupId);
+
 }

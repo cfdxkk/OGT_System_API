@@ -1,5 +1,6 @@
 package OGTSystem.service;
 
+import OGTSystem.entity.UserSafeInfoEntity;
 import OGTSystem.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ public class UserInfoService {
     @Autowired
     UserInfoRepository repository;
 
-    public List<UserInfoEntity> getByUUID(String uuid){
+    public List<UserSafeInfoEntity> getByUUID(String uuid){
         return repository.getByUUID(uuid);
     }
 
@@ -26,7 +27,7 @@ public class UserInfoService {
     public int setUserWebSocketServiceInfo (String UUID, String terminalType, String status, String userWsServer ){
 
         UserInfoEntity userinfoentity = new UserInfoEntity();
-        userinfoentity.setUUID(UUID);
+        userinfoentity.setUserId(UUID);
         userinfoentity.setWsStatus(status);
         userinfoentity.setUserWsServer(userWsServer);
 

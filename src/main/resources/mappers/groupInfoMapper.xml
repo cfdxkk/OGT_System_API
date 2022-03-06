@@ -9,12 +9,13 @@
         <result column="group_avatar" property="groupAvatar" jdbcType="VARCHAR" />
         <result column="group_Introduction" property="groupIntroduction" jdbcType="VARCHAR" />
         <result column="group_creator" property="groupCreator" jdbcType="VARCHAR" />
+        <result column="hot_group_flag" property="hotGroupFlag" jdbcType="VARCHAR" />
 
     </resultMap>
     <!-- 通过GroupId查询单条或多条记录 -->
     <select id="selectByGroupId" parameterType="String" resultMap="BaseResultMap">
         SELECT
-        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator
+        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator, hot_group_flag
         FROM group_info
         <if test="groupId != null">
             WHERE group_info.group_ID = #{groupId}
@@ -24,18 +25,60 @@
     <!-- 通过GroupName模糊查询单条或多条记录 -->
     <select id="selectByGroupName" parameterType="String" resultMap="BaseResultMap">
         SELECT
-        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator
+        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator, hot_group_flag
         FROM group_info
         <if test="groupName != null">
             WHERE group_info.group_name like #{groupName}
         </if>
     </select>
 
+    <!-- 通过GroupName模糊查询单条或多条记录 -->
+    <select id="selectHotGroup" resultMap="BaseResultMap">
+        SELECT
+        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator, hot_group_flag
+        FROM group_info
+        WHERE group_info.hot_group_flag = "1"
+    </select>
+
     <!-- 新建群聊 -->
     <insert id="createGroup">
         insert into group_info(group_ID, group_name, group_avatar, group_Introduction, group_creator)
-        value(#{groupId}, #{groupName}, #{groupAvatar}, #{groupIntroduction}, #{groupCreator});
+            value(#{groupId}, #{groupName}, #{groupAvatar}, #{groupIntroduction}, #{groupCreator});
     </insert>
+
+    <!-- 修改群聊为热门 -->
+    <update id="setHotGroup" parameterType="String" >
+        update group_info
+        set hot_group_flag = "1"
+        where group_id = #{groupId}
+    </update>
+
+    <!-- 取消群聊热门 -->
+    <update id="unSetHotGroup" parameterType="String" >
+        update group_info
+        set hot_group_flag = "0"
+        where group_id = #{groupId}
+    </update>
+
+    <!-- 取消群聊热门 -->
+    <update id="editGroupInfo">
+        update group_info
+        <set>
+            <if test="groupName != null and groupName != ''">
+                , group_name = #{groupName}
+            </if>
+            <if test="groupIntroduction != null and groupIntroduction != ''">
+                , group_Introduction = #{groupIntroduction}
+            </if>
+        </set>
+        where group_id = #{groupId}
+    </update>
+
+    <!-- 移除群聊 -->
+    <delete id="removeByGroupId" parameterType="String">
+        delete from group_info
+        where group_id = #{groupId}
+    </delete>
 
 
 </mapper>

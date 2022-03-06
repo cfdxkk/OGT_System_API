@@ -14,8 +14,8 @@
             UUID, UUNO, user_token, user_attack_time
         FROM user_auth
         WHERE 1 = 1
-        <if test="UUID != null">
-            AND UUID = #{UUID}
+        <if test="userId != null">
+            AND UUID = #{userId}
         </if>
     </select>
 

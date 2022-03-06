@@ -1,5 +1,6 @@
 package OGTSystem.repository;
 
+import OGTSystem.entity.GroupEventEditEntity;
 import OGTSystem.entity.GroupEventEntity;
 import OGTSystem.entity.GroupInfoEntity;
 import OGTSystem.mapper.GroupEventMapper;
@@ -22,5 +23,8 @@ public class GroupEventRepository {
     public int createGroupEvent(GroupEventEntity groupevententity){
         return mapper.createGroupEvent(groupevententity);
     }
+
+    public int editGroupEvent(GroupEventEditEntity groupeventeditentity) { return mapper.editGroupEvent(groupeventeditentity); }
+    public int removeByEventId(String eventId) { return mapper.removeByEventId(eventId); }
 
 }

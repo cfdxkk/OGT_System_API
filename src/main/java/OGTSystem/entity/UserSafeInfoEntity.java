@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class UserInfoEntity {
+public class UserSafeInfoEntity {
     // user_often_edit table
     // 唯一用户ID
     private String userId;
@@ -13,10 +13,6 @@ public class UserInfoEntity {
     private Long userNo;
     // 用户昵称
     private String username;
-    // 密码
-    private String password;
-    // 用户隐私权限
-    private String privacyAuth;
     // 用户头像
     private String userAvatar;
     // 用户个人简介

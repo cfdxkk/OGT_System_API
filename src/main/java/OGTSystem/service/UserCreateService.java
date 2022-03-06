@@ -3,6 +3,7 @@ package OGTSystem.service;
 import OGTSystem.entity.UserAuthEntity;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.repository.UserCreateRepository;
+import OGTSystem.repository.UserInfoRepository;
 import OGTSystem.util.UserToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ public class UserCreateService {
 
     @Autowired
     UserInfoService userinfoservice;
+
+    @Autowired
+    UserInfoRepository userinforepository;
 
     public int createUser(String username, String password){
 
@@ -35,12 +39,14 @@ public class UserCreateService {
             return 0;
         }
 
-        userinfoentity.setUUID(uuid);
+        userinfoentity.setUserId(uuid);
         userinfoentity.setUsername(username);
         userinfoentity.setPassword(password);
 
         userauthentity.setUUID(uuid);
         userauthentity.setUserToken(token);
+
+        userinforepository.createUserInUserNotOftenEdit(uuid);
 
         return repository.createUser(userinfoentity,userauthentity);
     }

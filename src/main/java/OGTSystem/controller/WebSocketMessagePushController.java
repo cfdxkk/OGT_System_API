@@ -56,10 +56,10 @@ public class WebSocketMessagePushController {
                 // 如果只传过来uunoTo的情况下，会根据uuno获取uuid
                 if ("".equals(uuidTo)){
                     UserInfoEntity userinfoentity = new UserInfoEntity();
-                    userinfoentity.setUUNO(uunoTo);
+                    userinfoentity.setUserNo(uunoTo);
                     List<UserInfoEntity> userInfo = userinfoservice.getByUserInfoEntity(userinfoentity);
                     if (userInfo.size()>0){
-                        uuidTo = userInfo.get(0).getUUID();
+                        uuidTo = userInfo.get(0).getUserId();
                     } else {
                         // 获取当前服务器的IP地址
                         String localhostIpAddress = "";
