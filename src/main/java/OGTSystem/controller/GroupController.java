@@ -1,8 +1,6 @@
 package OGTSystem.controller;
 
-import OGTSystem.entity.GroupInfoEntity;
-import OGTSystem.entity.GroupMessageEntity;
-import OGTSystem.entity.GroupRelationshipEntity;
+import OGTSystem.entity.*;
 import OGTSystem.message.sender.group.AsynchronousGroupMessageSender;
 import OGTSystem.service.*;
 import OGTSystem.vo.*;
@@ -61,6 +59,13 @@ public class GroupController {
     @Autowired
     public void setGroupmessageservice(GroupMessageService groupmessageservice){
         GroupController.groupmessageservice = groupmessageservice;
+    }
+
+    // 创建线程安全的 GroupUserIdentityService 对象
+    private static GroupUserIdentityService groupuseridentityservice;
+    @Autowired
+    public void setGroupuseridentityservice(GroupUserIdentityService groupuseridentityservice){
+        GroupController.groupuseridentityservice = groupuseridentityservice;
     }
 
 
@@ -154,4 +159,84 @@ public class GroupController {
     ){
         return groupinfoservice.getHotGroup();
     }
+
+
+    @CrossOrigin
+    @PostMapping("/getGroupUsersByGroupId")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserSafeInfoGroupEntity> getGroupRelationshipByGroupId(
+            @RequestBody GroupRelationshipSearchEntity grouprelationshipsearchentity
+    ){
+        return grouprelationshipservice.getGroupUsersByGroupId(grouprelationshipsearchentity);
+    }
+
+
+    @CrossOrigin
+    @PostMapping("/getGroupIdentity")
+    @ResponseStatus(HttpStatus.OK)
+    public int checkGroupController(
+            @RequestBody GroupUserIdentityEntity groupuseridentityentity
+    ){
+        return groupuseridentityservice.getUserIdentityType(groupuseridentityentity);
+    }
+
+    @CrossOrigin
+    @PostMapping("/getGroupInfoByGroupId")
+    @ResponseStatus(HttpStatus.OK)
+    public GroupInfoEntity getGroupInfoByGroupId(
+            @RequestBody GroupInfoSearchEntity groupinfosearchentity
+    ){
+        return groupinfoservice.getByGroupIdSafe(groupinfosearchentity);
+    }
+
+    @CrossOrigin
+    @PostMapping("/removeUserFromGroup")
+    @ResponseStatus(HttpStatus.OK)
+    public void removeUserFromGroup(
+            @RequestBody GroupRelationshipEditEntity grouprelationshipeditentity
+    ){
+        grouprelationshipservice.removeByEditEntity(grouprelationshipeditentity);
+    }
+
+    @CrossOrigin
+    @PostMapping("/addNewAdmin")
+    @ResponseStatus(HttpStatus.OK)
+    public void addNewAdmin(
+            @RequestBody GroupUserIdentityEditEntity groupuseridentityeditentity
+    ){
+        groupuseridentityservice.addNewAdmin(groupuseridentityeditentity);
+    }
+
+    @CrossOrigin
+    @PostMapping("/removeGroupAdmin")
+    @ResponseStatus(HttpStatus.OK)
+    public void removeGroupAdmin(
+            @RequestBody GroupUserIdentityEditEntity groupuseridentityeditentity
+    ){
+        groupuseridentityservice.removeGroupAdmin(groupuseridentityeditentity);
+    }
+
+
+    @CrossOrigin
+    @PostMapping("/exitGroup")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean exitGroup(
+            @RequestBody GroupRelationshipEditEntity grouprelationshipeditentity
+    ){
+        return grouprelationshipservice.exitGroup(grouprelationshipeditentity);
+    }
+
+
+    @CrossOrigin
+    @PostMapping("/deleteGroup")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean removeGroupAdmin(
+            @RequestBody GroupRelationshipEditEntity grouprelationshipeditentity
+    ){
+        return grouprelationshipservice.deleteGroup(grouprelationshipeditentity);
+    }
+
+
+
+
 }

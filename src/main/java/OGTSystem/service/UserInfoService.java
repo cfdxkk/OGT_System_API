@@ -1,6 +1,7 @@
 package OGTSystem.service;
 
 import OGTSystem.entity.UserSafeInfoEntity;
+import OGTSystem.entity.UserSafeInfoGroupEntity;
 import OGTSystem.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class UserInfoService {
 
     public List<UserSafeInfoEntity> getByUUID(String uuid){
         return repository.getByUUID(uuid);
+    }
+
+    public List<UserSafeInfoGroupEntity> getByUUID2(String uuid){
+        return repository.getByUUID2(uuid);
     }
 
     public List<UserInfoEntity> getByUserInfoEntity (UserInfoEntity userinfoentity){

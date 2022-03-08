@@ -136,6 +136,25 @@ public class GroupInfoService {
         }
     }
 
+    public GroupInfoEntity getByGroupIdSafe(GroupInfoSearchEntity groupinfosearchentity){
+
+        if (userauthservice.userAuthCheck(groupinfosearchentity.getUserId(), groupinfosearchentity.getToken())) {
+            // check
+            if ( "".equals(groupinfosearchentity.getGroupId()) ){
+                return null;
+            } else {
+                List<GroupInfoEntity> groupInfoList = repository.getByGroupId(groupinfosearchentity.getGroupId());
+                if (groupInfoList.size() > 0) {
+                    return groupInfoList.get(0);
+                } else {
+                    return null;
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+
     public List<GroupInfoEntity> getHotGroup(){
         return repository.getHotGroup();
     }

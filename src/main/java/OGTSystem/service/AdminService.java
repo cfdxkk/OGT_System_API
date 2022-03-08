@@ -135,6 +135,7 @@ public class AdminService {
             if( groupinfoeditentity.getGroupId() != null && !("".equals(groupinfoeditentity.getGroupId())) )
             groupinforepository.removeByGroupId(groupinfoeditentity.getGroupId());
             grouprelationshiprepository.removeByGroupId(groupinfoeditentity.getGroupId());
+            groupuseridentityservice.removeGroupAllIdentity(groupinfoeditentity.getGroupId());
         }
     }
 

@@ -14,7 +14,7 @@
             value(#{groupId}, #{groupAdminId}, #{groupAdminType});
     </insert>
 
-    <!-- 新建群聊特权用户 -->
+    <!-- 查找群聊特权用户 -->
     <select id="selectUserIdentity" resultMap="BaseResultMap">
         SELECT group_ID, group_admin_ID, group_admin_type
         FROM group_user_identity
@@ -27,6 +27,18 @@
             </if>
         </where>
     </select>
+
+    <!-- 移除用户身份 -->
+    <delete id="removeUserIdentity">
+        delete from group_user_identity
+        where group_id = #{groupId} and group_admin_ID = #{groupAdminId}
+    </delete>
+
+    <!-- 移除一个群里所有用户的身份 -->
+    <delete id="removeGroupAllIdentity" parameterType="String">
+        delete from group_user_identity
+        where group_id = #{groupId}
+    </delete>
 
 
 </mapper>

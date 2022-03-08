@@ -27,6 +27,14 @@
         </if>
     </select>
 
+    <!-- 通过GroupId查询单条或多条记录 -->
+    <select id="selectGroupRelationshipByGroupRelationshipEntity" resultMap="BaseResultMap">
+        SELECT
+        relationship_id, group_ID, UUID
+        FROM group_relationship
+        WHERE group_relationship.group_ID = #{groupId} AND group_relationship.UUID = #{userId}
+    </select>
+
     <!-- 新建一个 用户<->群 关系记录 -->
     <insert id="createGroupRelationship">
         insert into group_relationship(group_ID, UUID)
@@ -39,5 +47,10 @@
         where group_id = #{groupId}
     </delete>
 
+    <!-- 根据groupId和userId移除 用户<->群 关系记录 -->
+    <delete id="removeByEditEntity" parameterType="String">
+        delete from group_relationship
+        where group_id = #{groupId} AND UUID = #{userId}
+    </delete>
 
 </mapper>

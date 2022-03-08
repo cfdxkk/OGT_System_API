@@ -104,102 +104,114 @@ public class GroupMessageService {
 
 
 
+
+
     public boolean MessageToGroupUser (GroupMessageVo groupmessagevo) {
 
-        // 1. 检查消息完整性
+        System.out.println("checkTime?");
 
-        // 2. 检查消息是否违规,并且过滤消息
-        // 如果是普通消息(type == 1)，长度超过295则截取
-        if("1".equals(groupmessagevo.getMessageType())) {
-            groupmessagevo.setMessage(groupmessagevo.getMessage().length() > 295 ? groupmessagevo.getMessage().substring(0, 290) + "..." : groupmessagevo.getMessage());
-        }
+        // 0. 验证用户是否有权利发这条消息
+        if (grouprelationshipservice.checkUserInGroup(groupmessagevo.getUuidFrom(), groupmessagevo.getGroupIdFrom())) {
+            // 1. 检查消息完整性
 
-        // 3. 获得消息顺序号
-        String oldGroupMessageNo = messagenogroupservice.getAndCheckAndEditMessageNo(groupmessagevo.getGroupIdFrom(), redistemplate);
-        long newGroupMessageNo = (Long.parseLong(oldGroupMessageNo))+1;
-
-        // 这里理论上可以通过userList获取到这些用户的在线情况 -> select * from xxx where userid in ['foo', 'bar', 'baz']
-        // 然后只给在线用户发送消息
-
-        groupmessagevo.setMessageNoInGroup(Long.toString(newGroupMessageNo));
-        groupmessagevo.setSentDate(new Date().getTime());
-
-        // 4. 获取发送者用户信息
-        List<UserSafeInfoEntity> userInfo = userinfoservice.getByUUID(groupmessagevo.getUuidFrom());
-        if (userInfo.size() > 0) {
-            // 4.1 获取发送者用户名
-            String usernameFrom = userInfo.get(0).getUsername();
-            groupmessagevo.setUsernameFrom(usernameFrom);
-
-            // 5. 根据groupIdFrom获取群用户列表
-            List<GroupRelationshipEntity> userList = grouprelationshiprepository.getGroupRelationshipByGroupId(groupmessagevo.getGroupIdFrom());
-
-
-            // 6. 遍历userList
-            for(GroupRelationshipEntity user: userList) {
-
-                // 6.1 和发送者uuid相同，跳过
-                if (user.getUserId().equals(groupmessagevo.getUuidFrom())){
-                    continue;
-                }
-
-                // 6.2 向user推送消息并获取消息发送状态
-                boolean groupMessageSentStatus = asynchronousgroupmessagesender.sentMessageToGroupUser(
-                        groupmessagevo.getGroupIdFrom(),
-                        groupmessagevo.getUuidFrom(),
-                        groupmessagevo.getUsernameFrom(),
-                        user.getUserId(),
-                        Long.toString(newGroupMessageNo),
-                        groupmessagevo.getToken(),
-                        groupmessagevo.getMessageType(),
-                        groupmessagevo.getMessage()
-                );
-                System.out.println("向" + user.getUserId() + "的消息" + groupmessagevo.getMessage() + "发送结果为" + groupMessageSentStatus);
-                // 2.2.1 如果消息发送失败
-                if (!groupMessageSentStatus){
-                    // 在redis层存储离线消息记录
-                    this.saveOfflineGroupMessageToRedis(groupmessagevo, user.getUserId(), redistemplate);
-                }
-
+            // 2. 检查消息是否违规,并且过滤消息
+            // 如果是普通消息(type == 1)，长度超过295则截取
+            if("1".equals(groupmessagevo.getMessageType())) {
+                groupmessagevo.setMessage(groupmessagevo.getMessage().length() > 295 ? groupmessagevo.getMessage().substring(0, 290) + "..." : groupmessagevo.getMessage());
             }
-        } else {
+
+            // 3. 获得消息顺序号
+            String oldGroupMessageNo = messagenogroupservice.getAndCheckAndEditMessageNo(groupmessagevo.getGroupIdFrom(), redistemplate);
+            long newGroupMessageNo = (Long.parseLong(oldGroupMessageNo))+1;
+
+            // 这里理论上可以通过userList获取到这些用户的在线情况 -> select * from xxx where userid in ['foo', 'bar', 'baz']
+            // 然后只给在线用户发送消息
+
+            groupmessagevo.setMessageNoInGroup(Long.toString(newGroupMessageNo));
+            groupmessagevo.setSentDate(new Date().getTime());
+
+            // 4. 获取发送者用户信息
+            List<UserSafeInfoEntity> userInfo = userinfoservice.getByUUID(groupmessagevo.getUuidFrom());
+            if (userInfo.size() > 0) {
+                // 4.1 获取发送者用户名
+                String usernameFrom = userInfo.get(0).getUsername();
+                groupmessagevo.setUsernameFrom(usernameFrom);
+
+                // 5. 根据groupIdFrom获取群用户列表
+                List<GroupRelationshipEntity> userList = grouprelationshiprepository.getGroupRelationshipByGroupId(groupmessagevo.getGroupIdFrom());
+
+
+                // 6. 遍历userList
+                for(GroupRelationshipEntity user: userList) {
+
+                    // 6.1 和发送者uuid相同，跳过
+                    if (user.getUserId().equals(groupmessagevo.getUuidFrom())){
+                        continue;
+                    }
+
+                    System.out.println("22222222222222222 times?" + user.getUserId());
+
+                    // 6.2 向user推送消息并获取消息发送状态
+                    boolean groupMessageSentStatus = asynchronousgroupmessagesender.sentMessageToGroupUser(
+                            groupmessagevo.getGroupIdFrom(),
+                            groupmessagevo.getUuidFrom(),
+                            groupmessagevo.getUsernameFrom(),
+                            user.getUserId(),
+                            Long.toString(newGroupMessageNo),
+                            groupmessagevo.getToken(),
+                            groupmessagevo.getMessageType(),
+                            groupmessagevo.getMessage()
+                    );
+                    System.out.println("向" + user.getUserId() + "的消息" + groupmessagevo.getMessage() + "发送结果为" + groupMessageSentStatus);
+                    // 2.2.1 如果消息发送失败
+                    if (!groupMessageSentStatus){
+                        // 在redis层存储离线消息记录
+                        this.saveOfflineGroupMessageToRedis(groupmessagevo, user.getUserId(), redistemplate);
+                    }
+
+                }
+            } else {
                 System.out.println("消息发送失败[获取用户名失败]");
                 return false;
-        }
-
-
-
-        // 6. 在持久层存储离线消息记录
-        if("1".equals(groupmessagevo.getMessageType())) {
-            // 6.1 如果是普通消息，就往消息表存储
-            this.saveGroupMessage2Mysql(groupmessagevo);
-        } else {
-            // 6.2 如果是事件，就往事件表存
-            GroupEventEntity groupevententity = new GroupEventEntity();
-            String[] eventStringArray = groupmessagevo.getMessage().split(" >c10y_:< ");
-            groupevententity.setGroupIdFrom(groupmessagevo.getGroupIdFrom());
-            groupevententity.setUuidFrom(groupmessagevo.getUuidFrom());
-            groupevententity.setEventStartDateTime(new Date(Long.parseLong(eventStringArray[0])));
-            groupevententity.setEventEndDateTime(new Date(Long.parseLong(eventStringArray[1])));
-            if (eventStringArray[3].length() > 800){
-                groupevententity.setLangEventFlag(1);
-                groupevententity.setEventText(eventStringArray[3].substring(0, 800) + "..."  );
-            } else {
-                groupevententity.setLangEventFlag(0);
-                groupevententity.setEventText(eventStringArray[3]);
             }
-            groupevententity.setEventColor(eventStringArray[4]);
-            groupevententity.setEventTitle(eventStringArray[2]);
-            groupevententity.setSentDate(new Date());
 
-            this.saveGroupEvent2Mysql(groupevententity);
 
+
+            // 6. 在持久层存储离线消息记录
+            if("1".equals(groupmessagevo.getMessageType())) {
+                // 6.1 如果是普通消息，就往消息表存储
+                this.saveGroupMessage2Mysql(groupmessagevo);
+            } else {
+                // 6.2 如果是事件，就往事件表存
+                GroupEventEntity groupevententity = new GroupEventEntity();
+                String[] eventStringArray = groupmessagevo.getMessage().split(" >c10y_:< ");
+                groupevententity.setGroupIdFrom(groupmessagevo.getGroupIdFrom());
+                groupevententity.setUuidFrom(groupmessagevo.getUuidFrom());
+                groupevententity.setEventStartDateTime(new Date(Long.parseLong(eventStringArray[0])));
+                groupevententity.setEventEndDateTime(new Date(Long.parseLong(eventStringArray[1])));
+                if (eventStringArray[3].length() > 800){
+                    groupevententity.setLangEventFlag(1);
+                    groupevententity.setEventText(eventStringArray[3].substring(0, 800) + "..."  );
+                } else {
+                    groupevententity.setLangEventFlag(0);
+                    groupevententity.setEventText(eventStringArray[3]);
+                }
+                groupevententity.setEventColor(eventStringArray[4]);
+                groupevententity.setEventTitle(eventStringArray[2]);
+                groupevententity.setSentDate(new Date());
+
+                this.saveGroupEvent2Mysql(groupevententity);
+
+            }
+
+            // 7. 群消息顺序号 + 1
+            messagenogroupservice.messageNoPlusOne(groupmessagevo.getGroupIdFrom(), redistemplate, oldGroupMessageNo);
+
+            return true;
+        } else {
+            System.out.println("用户已经不在群聊中");
+            return false;
         }
-
-        // 7. 群消息顺序号 + 1
-        messagenogroupservice.messageNoPlusOne(groupmessagevo.getGroupIdFrom(), redistemplate, oldGroupMessageNo);
-
-        return true;
     }
 
 

@@ -1,9 +1,6 @@
 package OGTSystem.mapper;
 
-import OGTSystem.entity.UserInfoAdminEntity;
-import OGTSystem.entity.UserInfoEditEntity;
-import OGTSystem.entity.UserInfoEntity;
-import OGTSystem.entity.UserSafeInfoEntity;
+import OGTSystem.entity.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.ArrayList;
@@ -13,7 +10,9 @@ import java.util.List;
 public interface UserOftenEditMapper {
 
     List<UserSafeInfoEntity> selectByUUId(String uuid);
+    List<UserSafeInfoGroupEntity> selectByUUId2(String uuid);
     List<UserInfoEntity> getByUserInfoEntity(UserInfoEntity userinfoentity);
+
     int createUser(UserInfoEntity user);
     int setUserWebSocketServiceInfo(UserInfoEntity userinfoentity);
 

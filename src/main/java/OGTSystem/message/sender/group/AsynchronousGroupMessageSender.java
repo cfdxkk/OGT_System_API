@@ -56,10 +56,12 @@ public class AsynchronousGroupMessageSender implements FutureCallback<HttpRespon
                 System.out.println("最终确认消息发送失败 :( - 没有在线的ws服务器");
                 return false;
             }
+            HashMap<String,String> wsServerMap = new HashMap<>();
             for (WsServerInfoEntity wsServerInfo :wsServerInfoList){
                 String wsServerAddress = wsServerInfo.getServerAddress();
-                this.wsServerAddressMap.put(wsServerAddress,"");
+                wsServerMap.put(wsServerAddress,"");
             }
+            this.wsServerAddressMap = wsServerMap;
 
 
             // 2.创建异步httpclient对象
@@ -87,6 +89,7 @@ public class AsynchronousGroupMessageSender implements FutureCallback<HttpRespon
 
                     HttpPost httppost = new HttpPost(urlbuilder.build());
 
+                    System.out.println("sendddddddddddddddddddddddd 2 time?");
                     // 3.2 发起请求，不阻塞，马上返回
                     // 我想让callback方法给this类中的一个状态flag[messageSentFlag]赋值，然后我再检测状态flag即可得知消息发送是否成功
                     httpclient.execute(httppost, this);

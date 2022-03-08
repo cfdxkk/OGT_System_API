@@ -1,6 +1,7 @@
 package OGTSystem.repository;
 
 import OGTSystem.entity.GroupInfoEntity;
+import OGTSystem.entity.GroupUserIdentityEditEntity;
 import OGTSystem.entity.GroupUserIdentityEntity;
 import OGTSystem.mapper.GroupInfoMapper;
 import OGTSystem.mapper.GroupUserIdentityMapper;
@@ -22,6 +23,14 @@ public class GroupUserIdentityRepository {
 
     public List<GroupUserIdentityEntity> getUserIdentity(GroupUserIdentityEntity groupuseridentityentity) {
         return mapper.selectUserIdentity(groupuseridentityentity);
+    }
+
+    public int removeUserIdentity (GroupUserIdentityEditEntity groupuseridentityeditentity) {
+        return mapper.removeUserIdentity(groupuseridentityeditentity);
+    }
+
+    public int removeGroupAllIdentity (String groupId) {
+        return mapper.removeGroupAllIdentity(groupId);
     }
 
 }

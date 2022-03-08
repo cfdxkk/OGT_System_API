@@ -1,6 +1,7 @@
 package OGTSystem.repository;
 
 import OGTSystem.entity.GroupInfoEntity;
+import OGTSystem.entity.GroupRelationshipEditEntity;
 import OGTSystem.entity.GroupRelationshipEntity;
 import OGTSystem.mapper.GroupInfoMapper;
 import OGTSystem.mapper.GroupRelationshipMapper;
@@ -23,6 +24,12 @@ public class GroupRelationshipRepository {
         return mapper.selectGroupRelationshipByGroupId(groupId);
     }
 
+    public List<GroupRelationshipEntity> getGroupRelationshipByGroupRelationshipEntity(GroupRelationshipEntity entity){
+        return mapper.selectGroupRelationshipByGroupRelationshipEntity(entity);
+    }
+
+
+
     public int createGroupRelationship(GroupRelationshipEntity grouprelationshipentity){
         return mapper.createGroupRelationship(grouprelationshipentity);
     }
@@ -30,5 +37,7 @@ public class GroupRelationshipRepository {
     public int removeByGroupId(String groupId) {
         return mapper.removeByGroupId(groupId);
     }
+
+    public int removeByEditEntity(GroupRelationshipEditEntity grouprelationshipeditentity) { return mapper.removeByEditEntity(grouprelationshipeditentity); }
 
 }

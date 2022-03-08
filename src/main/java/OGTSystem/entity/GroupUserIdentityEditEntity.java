@@ -4,7 +4,7 @@ import lombok.Data;
 
 
 @Data
-public class GroupUserIdentityEntity {
+public class GroupUserIdentityEditEntity {
 
     // id 群号
     private String groupId;
@@ -12,6 +12,10 @@ public class GroupUserIdentityEntity {
     private String groupAdminId;
     // 用户特权类别
     private int groupAdminType;
+
+
+    // 编辑者ID
+    private String userId;
     // token
     private String token;
 

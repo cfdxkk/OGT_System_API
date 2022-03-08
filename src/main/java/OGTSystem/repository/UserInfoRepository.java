@@ -1,9 +1,6 @@
 package OGTSystem.repository;
 
-import OGTSystem.entity.UserInfoAdminEntity;
-import OGTSystem.entity.UserInfoEditEntity;
-import OGTSystem.entity.UserInfoEntity;
-import OGTSystem.entity.UserSafeInfoEntity;
+import OGTSystem.entity.*;
 import OGTSystem.mapper.UserNotOftenEditMapper;
 import OGTSystem.mapper.UserOftenEditMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +20,8 @@ public class UserInfoRepository {
     public List<UserSafeInfoEntity> getByUUID(String uuid){
         return userofteneditmapper.selectByUUId(uuid);
     }
+
+    public List<UserSafeInfoGroupEntity> getByUUID2(String uuid) {return userofteneditmapper.selectByUUId2(uuid); }
 
     public List<UserInfoEntity> getByUserInfoEntity(UserInfoEntity userinfoentity){
         return userofteneditmapper.getByUserInfoEntity(userinfoentity);
