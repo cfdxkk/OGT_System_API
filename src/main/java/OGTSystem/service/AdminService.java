@@ -25,9 +25,6 @@ public class AdminService {
     GroupRelationshipService grouprelationshipservice;
 
     @Autowired
-    AdminService groupinfoservice;
-
-    @Autowired
     GroupUserIdentityService groupuseridentityservice;
 
     @Autowired

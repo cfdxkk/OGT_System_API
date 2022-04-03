@@ -2,6 +2,12 @@
 spring:
   application:
     name: OGT_System
+  # 请求设置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
   # redis数据源
   redis:
     # 基础设置
@@ -43,3 +49,21 @@ mybatis:
   type-aliases-package: entity    # 实体类所在的位置
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   #用于控制台打印sql语句
+
+
+# ali oss
+aliyun:
+  oss:
+    # oss对外服务的访问域名
+    endpoint: oss-cn-beijing.aliyuncs.com
+    # 访问身份验证中用到用户标识
+    accessKeyId: LTAI5tFKyusizWFTFMtGw1Fn
+    # 用户用于加密签名字符串和oss用来验证签名字符串的密钥
+    accessKeySecret: yGdTWG1VYy1Jz9gRGAfCMJSaQ0ZKdX
+    # oss的存储空间
+    bucketName: ogt-test-image-oss-ali-01
+    # 上传文件大小(M)
+    maxSize: 200
+    # 上传文件夹路径前缀
+    dir:
+      prefix: ogt/images/

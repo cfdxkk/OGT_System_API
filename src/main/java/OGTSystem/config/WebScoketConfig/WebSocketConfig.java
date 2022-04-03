@@ -1,4 +1,4 @@
-package OGTSystem.WebSocket;
+package OGTSystem.config.WebScoketConfig;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

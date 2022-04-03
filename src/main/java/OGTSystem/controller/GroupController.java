@@ -92,7 +92,7 @@ public class GroupController {
     @CrossOrigin
     @PostMapping("/join")
     @ResponseStatus(HttpStatus.OK)
-    public List<GroupInfoEntity> createGroup(
+    public List<GroupInfoEntity> joinGroup(
             @RequestBody GroupRelationshipEntity grouprelationshipentity
     ){
 
@@ -230,7 +230,7 @@ public class GroupController {
     @CrossOrigin
     @PostMapping("/deleteGroup")
     @ResponseStatus(HttpStatus.OK)
-    public boolean removeGroupAdmin(
+    public boolean deleteGroup(
             @RequestBody GroupRelationshipEditEntity grouprelationshipeditentity
     ){
         return grouprelationshipservice.deleteGroup(grouprelationshipeditentity);
