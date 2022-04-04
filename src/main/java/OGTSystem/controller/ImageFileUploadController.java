@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/image")
@@ -23,7 +25,11 @@ public class ImageFileUploadController {
     @CrossOrigin
     @PostMapping("upload")
     @ResponseStatus(HttpStatus.OK)
-    public String uploadOssFile(@RequestParam("file") MultipartFile file) {
+    public List<String> uploadOssFile(
+            @RequestParam("file") MultipartFile file
+//            @RequestParam("userId") String userId,
+//            @RequestParam("token") String token
+    ) {
         //获取上传文件 MultipartFile
         InputStream inputStream = null;
         try {
@@ -31,7 +37,14 @@ public class ImageFileUploadController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ossService.uploadFileAvatar(inputStream, file.getOriginalFilename());
+
+//        System.out.println("userId [" + userId + "]  -  token [" + token + "]");
+
+        List<String> result = new ArrayList<>();
+
+        result.add(ossService.uploadFileAvatar(inputStream, file.getOriginalFilename()));
+
+        return result;
     }
 
 }

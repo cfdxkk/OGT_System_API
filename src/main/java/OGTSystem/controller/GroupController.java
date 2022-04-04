@@ -1,6 +1,7 @@
 package OGTSystem.controller;
 
 import OGTSystem.entity.*;
+import OGTSystem.interFuck.OssService;
 import OGTSystem.message.sender.group.AsynchronousGroupMessageSender;
 import OGTSystem.service.*;
 import OGTSystem.vo.*;
@@ -8,10 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/group")
@@ -68,7 +73,12 @@ public class GroupController {
         GroupController.groupuseridentityservice = groupuseridentityservice;
     }
 
-
+    // 创建线程安全的 OssService 对象
+    private static OssService ossservice;
+    @Autowired
+    public void setOssservice(OssService ossservice){
+        GroupController.ossservice = ossservice;
+    }
 
     @CrossOrigin
     @PostMapping("/create")
@@ -234,6 +244,41 @@ public class GroupController {
             @RequestBody GroupRelationshipEditEntity grouprelationshipeditentity
     ){
         return grouprelationshipservice.deleteGroup(grouprelationshipeditentity);
+    }
+
+    @CrossOrigin
+    @PostMapping("/avatar")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, String> updateAvatar(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("fileOrigin") MultipartFile fileOrigin,
+            @RequestParam("userId") String userId,
+            @RequestParam("token") String token
+    ){
+        System.out.println("userId [" + userId + "]  -  token [" + token + "]");
+
+
+        Map<String, String> result = new HashMap<>();
+
+        //获取小上传文件 inputStream
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        result.put("small", ossservice.uploadFileAvatar(inputStream, file.getOriginalFilename()));
+
+        //获取大上传文件 inputStreamOrigin
+        InputStream inputStreamOrigin = null;
+        try {
+            inputStreamOrigin = fileOrigin.getInputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        result.put("full", ossservice.uploadFileAvatar(inputStreamOrigin, fileOrigin.getOriginalFilename()));
+
+        return result;
     }
 
 
