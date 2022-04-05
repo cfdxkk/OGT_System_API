@@ -7,6 +7,7 @@
         <result column="group_NO" property="groupNo" jdbcType="BIGINT" />
         <result column="group_name" property="groupName" jdbcType="VARCHAR" />
         <result column="group_avatar" property="groupAvatar" jdbcType="VARCHAR" />
+        <result column="group_avatar_origin" property="groupAvatarOrigin" jdbcType="VARCHAR" />
         <result column="group_Introduction" property="groupIntroduction" jdbcType="VARCHAR" />
         <result column="group_creator" property="groupCreator" jdbcType="VARCHAR" />
         <result column="hot_group_flag" property="hotGroupFlag" jdbcType="VARCHAR" />
@@ -15,7 +16,7 @@
     <!-- 通过GroupId查询单条或多条记录 -->
     <select id="selectByGroupId" parameterType="String" resultMap="BaseResultMap">
         SELECT
-        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator, hot_group_flag
+        group_ID, group_NO, group_name, group_avatar, group_avatar_origin, group_Introduction, group_creator, hot_group_flag
         FROM group_info
         <if test="groupId != null">
             WHERE group_info.group_ID = #{groupId}
@@ -25,7 +26,7 @@
     <!-- 通过GroupName模糊查询单条或多条记录 -->
     <select id="selectByGroupName" parameterType="String" resultMap="BaseResultMap">
         SELECT
-        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator, hot_group_flag
+        group_ID, group_NO, group_name, group_avatar, group_avatar_origin, group_Introduction, group_creator, hot_group_flag
         FROM group_info
         <if test="groupName != null">
             WHERE group_info.group_name like #{groupName}
@@ -35,15 +36,15 @@
     <!-- 通过GroupName模糊查询单条或多条记录 -->
     <select id="selectHotGroup" resultMap="BaseResultMap">
         SELECT
-        group_ID, group_NO, group_name, group_avatar, group_Introduction, group_creator, hot_group_flag
+        group_ID, group_NO, group_name, group_avatar, group_avatar_origin, group_Introduction, group_creator, hot_group_flag
         FROM group_info
         WHERE group_info.hot_group_flag = "1"
     </select>
 
     <!-- 新建群聊 -->
     <insert id="createGroup">
-        insert into group_info(group_ID, group_name, group_avatar, group_Introduction, group_creator)
-            value(#{groupId}, #{groupName}, #{groupAvatar}, #{groupIntroduction}, #{groupCreator});
+        insert into group_info(group_ID, group_name, group_avatar, group_avatar_origin, group_Introduction, group_creator)
+            value(#{groupId}, #{groupName}, #{groupAvatar}, #{groupAvatarOrigin}, #{groupIntroduction}, #{groupCreator});
     </insert>
 
     <!-- 修改群聊为热门 -->

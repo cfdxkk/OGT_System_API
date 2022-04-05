@@ -16,6 +16,8 @@ public class GroupInfoVo {
     private String groupIntroduction;
     // 群头像
     private String groupAvatar;
+    // 群头像
+    private String groupAvatarOrigin;
     // 群主ID
     private String groupCreator;
     // token

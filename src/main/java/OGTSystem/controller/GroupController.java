@@ -73,13 +73,6 @@ public class GroupController {
         GroupController.groupuseridentityservice = groupuseridentityservice;
     }
 
-    // 创建线程安全的 OssService 对象
-    private static OssService ossservice;
-    @Autowired
-    public void setOssservice(OssService ossservice){
-        GroupController.ossservice = ossservice;
-    }
-
     @CrossOrigin
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.OK)
@@ -255,30 +248,7 @@ public class GroupController {
             @RequestParam("userId") String userId,
             @RequestParam("token") String token
     ){
-        System.out.println("userId [" + userId + "]  -  token [" + token + "]");
-
-
-        Map<String, String> result = new HashMap<>();
-
-        //获取小上传文件 inputStream
-        InputStream inputStream = null;
-        try {
-            inputStream = file.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        result.put("small", ossservice.uploadFileAvatar(inputStream, file.getOriginalFilename()));
-
-        //获取大上传文件 inputStreamOrigin
-        InputStream inputStreamOrigin = null;
-        try {
-            inputStreamOrigin = fileOrigin.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        result.put("full", ossservice.uploadFileAvatar(inputStreamOrigin, fileOrigin.getOriginalFilename()));
-
-        return result;
+        return groupinfoservice.uploadGroupAvatar(file, fileOrigin, userId, token);
     }
 
 

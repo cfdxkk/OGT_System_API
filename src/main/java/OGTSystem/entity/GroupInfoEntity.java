@@ -16,6 +16,8 @@ public class GroupInfoEntity {
     private String groupIntroduction;
     // 群头像
     private String groupAvatar;
+    //
+    private String groupAvatarOrigin;
     // 群主ID
     private String groupCreator;
     // 热门群Flag

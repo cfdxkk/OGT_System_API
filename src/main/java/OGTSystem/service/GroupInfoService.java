@@ -2,16 +2,19 @@ package OGTSystem.service;
 
 import OGTSystem.controller.GroupController;
 import OGTSystem.entity.*;
+import OGTSystem.interFuck.OssService;
 import OGTSystem.repository.GroupInfoRepository;
 import OGTSystem.util.UserToken;
 import OGTSystem.vo.GroupCreateVo;
 import OGTSystem.vo.GroupInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 @Service
 public class GroupInfoService {
@@ -23,6 +26,9 @@ public class GroupInfoService {
 
     @Autowired
     UserAuthService userauthservice;
+
+    @Autowired
+    OssService ossservice;
 
     // 创建线程安全的GroupRelationshipService对象
 //    private static GroupRelationshipService grouprelationshipservice;
@@ -66,12 +72,14 @@ public class GroupInfoService {
                 groupinfoentity.setGroupId(groupId);
                 groupinfoentity.setGroupCreator(groupinfovo.getGroupCreator());
                 groupinfoentity.setGroupName(groupinfovo.getGroupName());
+                groupinfoentity.setGroupAvatar(groupinfovo.getGroupAvatar());
+                groupinfoentity.setGroupAvatarOrigin(groupinfovo.getGroupAvatarOrigin());
                 groupinfoentity.setGroupIntroduction(groupinfovo.getGroupIntroduction());
                 repository.createGroup(groupinfoentity);
 
 
 
-                // 一旦创建成功，则把创建者加入群聊关系数据库，人后在特殊权限用户表记录这个群里拥有特殊权限的用户，并返回这个用户加入的所有群聊列表
+                // 一旦创建成功，则把创建者加入群聊关系数据库，然后在特殊权限用户表记录这个群里拥有特殊权限的用户，并返回这个用户加入的所有群聊列表
                 List<GroupInfoVo> groupVoList = new ArrayList<GroupInfoVo>();
 
                 GroupRelationshipEntity grouprelationshipentity = new GroupRelationshipEntity();
@@ -91,6 +99,7 @@ public class GroupInfoService {
                     groupinfoV.setGroupName(groupInfoE.getGroupName());
                     groupinfoV.setGroupIntroduction(groupInfoE.getGroupIntroduction());
                     groupinfoV.setGroupAvatar(groupInfoE.getGroupAvatar());
+                    groupinfoV.setGroupAvatarOrigin(groupInfoE.getGroupAvatarOrigin());
                     groupinfoV.setGroupCreator(groupInfoE.getGroupCreator());
 
                     groupVoList.add(groupinfoV);
@@ -157,6 +166,40 @@ public class GroupInfoService {
 
     public List<GroupInfoEntity> getHotGroup(){
         return repository.getHotGroup();
+    }
+
+    public Map<String, String> uploadGroupAvatar(MultipartFile file, MultipartFile fileOrigin, String userId, String token){
+
+        System.out.println("userId [" + userId + "]  -  token [" + token + "]");
+
+        if (userauthservice.userAuthCheck(userId, token)) {
+            Map<String, String> result = new HashMap<>();
+
+            //获取小上传文件 inputStream
+            InputStream inputStream = null;
+            try {
+                inputStream = file.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // 小头像上传到阿里云oss
+            result.put("small", ossservice.uploadFileAvatar(inputStream, file.getOriginalFilename()));
+
+            //获取大上传文件 inputStreamOrigin
+            InputStream inputStreamOrigin = null;
+            try {
+                inputStreamOrigin = fileOrigin.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // 头像原图上传到阿里云oss
+            result.put("full", ossservice.uploadFileAvatar(inputStreamOrigin, fileOrigin.getOriginalFilename()));
+
+            return result;
+        } else {
+            System.out.println("有人可能正在利用群聊头像上传接口进行攻击！");
+            return null;
+        }
     }
 
 
