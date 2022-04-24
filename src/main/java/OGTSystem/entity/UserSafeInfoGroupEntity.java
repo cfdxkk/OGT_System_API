@@ -15,6 +15,8 @@ public class UserSafeInfoGroupEntity {
     private String username;
     // 用户头像
     private String userAvatar;
+    // 用户头像(原图)
+    private String userAvatarOrigin;
     // 用户个人简介
     private String userInfo;
     // 用户ws连接状态

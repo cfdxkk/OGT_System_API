@@ -1,6 +1,7 @@
 package OGTSystem.controller;
 
 import OGTSystem.entity.UserAuthEntity;
+import OGTSystem.entity.UserInfoEditEntity;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.entity.UserSafeInfoEntity;
 import OGTSystem.service.UserAuthService;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -142,6 +145,30 @@ public class UserController {
             @RequestBody UserAuthEntity userauthentity
     ){
         return userauthservice.userAuthCheck(userauthentity.getUserId(),userauthentity.getUserToken());
+    }
+
+
+    @CrossOrigin
+    @PostMapping("/avatar")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, String> updateAvatar(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("fileOrigin") MultipartFile fileOrigin,
+            @RequestParam("userId") String userId,
+            @RequestParam("token") String token
+    ){
+        return userinfoservice.uploadUserAvatar(file, fileOrigin, userId, token);
+    }
+
+
+
+    @CrossOrigin
+    @PostMapping("/editUserInfo")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean editUserInfo(
+            @RequestBody UserInfoEditEntity userinfoeditentity
+    ){
+        return userinfoservice.editUserInfo(userinfoeditentity);
     }
 
 

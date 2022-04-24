@@ -9,6 +9,7 @@
         <!--        <result column="password" property="password" jdbcType="VARCHAR" />-->
         <!--        <result column="privacy_auth" property="privacyAuth" jdbcType="VARCHAR" />-->
         <result column="user_avatar" property="userAvatar" jdbcType="VARCHAR" />
+        <result column="user_avatar_origin" property="userAvatarOrigin" jdbcType="VARCHAR" />
         <result column="user_info" property="userInfo" jdbcType="VARCHAR" />
 
         <result column="ws_status" property="wsStatus" jdbcType="CHAR" />
@@ -40,6 +41,7 @@
         <!--        <result column="password" property="password" jdbcType="VARCHAR" />-->
         <!--        <result column="privacy_auth" property="privacyAuth" jdbcType="VARCHAR" />-->
         <result column="user_avatar" property="userAvatar" jdbcType="VARCHAR" />
+        <result column="user_avatar_origin" property="userAvatarOrigin" jdbcType="VARCHAR" />
         <result column="user_info" property="userInfo" jdbcType="VARCHAR" />
 
         <result column="ws_status" property="wsStatus" jdbcType="CHAR" />
@@ -69,6 +71,7 @@
         <result column="password" property="password" jdbcType="VARCHAR" />
         <result column="privacy_auth" property="privacyAuth" jdbcType="VARCHAR" />
         <result column="user_avatar" property="userAvatar" jdbcType="VARCHAR" />
+        <result column="user_avatar_origin" property="userAvatarOrigin" jdbcType="VARCHAR" />
         <result column="user_info" property="userInfo" jdbcType="VARCHAR" />
 
         <result column="ws_status" property="wsStatus" jdbcType="CHAR" />
@@ -94,7 +97,7 @@
     <!-- 通过UUID查询单条或多条记录 -->
     <select id="selectByUUId" parameterType="String" resultMap="SafeResultMap">
         SELECT
-        UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info,
+        UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_avatar_origin, user_info,
         ws_status, ws_android_phone_status, ws_ios_phone_status, ws_android_pad_status, ws_ios_pad_status, ws_windows_status, ws_macos_status, ws_web_browser_status, ws_linux_status, user_ws_server,
         user_admin_flag, user_ban_flag,
         user_email, user_sex, user_birthday, user_location
@@ -108,7 +111,7 @@
     <!-- 通过UUID查询单条或多条记录 -->
     <select id="selectByUUId2" parameterType="String" resultMap="SafeGroupResultMap">
         SELECT
-        UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info,
+        UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_avatar_origin, user_info,
         ws_status, ws_android_phone_status, ws_ios_phone_status, ws_android_pad_status, ws_ios_pad_status, ws_windows_status, ws_macos_status, ws_web_browser_status, ws_linux_status, user_ws_server,
         user_admin_flag, user_ban_flag,
         user_email, user_sex, user_birthday, user_location
@@ -122,7 +125,7 @@
     <!-- 通过UserInfoEntity查询单条或多条记录 -->
     <select id="getByUserInfoEntity" resultMap="BaseResultMap">
         SELECT
-        UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_info,
+        UOE.UUID UID, UOE.UUNO, username, password, privacy_auth, user_avatar, user_avatar_origin, user_info,
         ws_status, ws_android_phone_status, ws_ios_phone_status, ws_android_pad_status, ws_ios_pad_status, ws_windows_status, ws_macos_status, ws_web_browser_status, ws_linux_status, user_ws_server,
         user_admin_flag, user_ban_flag,
         user_email, user_sex, user_birthday, user_location
@@ -190,6 +193,13 @@
             <if test="userInfo != null and userInfo != ''">
                 , user_info = #{userInfo}
             </if>
+            <if test="userAvatar != null and userAvatar != ''">
+                , user_avatar = #{userAvatar}
+            </if>
+            <if test="userAvatarOrigin != null and userAvatarOrigin != ''">
+                , user_avatar_origin = #{userAvatarOrigin}
+            </if>
+
         </set>
         where UUID = #{userId}
     </update>

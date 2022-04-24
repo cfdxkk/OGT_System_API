@@ -19,6 +19,8 @@ public class UserInfoEditEntity {
     private String privacyAuth;
     // 用户头像
     private String userAvatar;
+    // 用户头像(原图)
+    private String userAvatarOrigin;
     // 用户个人简介
     private String userInfo;
     // 用户ws连接状态
@@ -39,7 +41,7 @@ public class UserInfoEditEntity {
 
     // user_not_often_edit table
     // 用户邮箱
-    private String userEmail;
+        private String userEmail;
     // 用户性别
     private String userSex;
     // 用户生日
