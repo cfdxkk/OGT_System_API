@@ -10,7 +10,7 @@ public class GroupCreateVo {
 
     // id 群号
     private String groupId;
-    // no 自增数字编号
+    // 群聊列表
     private List<GroupInfoVo> groupList;
 
 }
