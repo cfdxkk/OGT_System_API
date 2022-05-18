@@ -33,7 +33,7 @@ public class OgtSystemInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args){
         this.getIPAddress();
-//        this.getBaiduCloudTextReviewAccessToken();
+        this.getBaiduCloudTextReviewAccessToken();
 
     }
 
