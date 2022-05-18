@@ -6,7 +6,7 @@ import OGTSystem.controller.WebSocketMessagePushController;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserInfoService;
-import OGTSystem.util.LocalhostTrueIpAddressInitializer;
+import OGTSystem.util.OgtSystemInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,7 @@ public class AsynchronousMessageRecipient {
         System.out.println("=================groupIdFrom is: " + groupIdFrom);
         System.out.println("User check: " + userauthservice.userAuthCheck(uuidFrom,token));
         // 获取当前服务器的IP地址
-        String localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
+        String localhostIpAddress = OgtSystemInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
 
         // 判断传参是否异常
         if ("".equals(groupIdFrom) || "".equals(uuidFrom) || "".equals(usernameFrom) || "".equals(uuidTo) || "".equals(messageIDInGroup) || "".equals(token) || "".equals(messageType) || "".equals(message)){

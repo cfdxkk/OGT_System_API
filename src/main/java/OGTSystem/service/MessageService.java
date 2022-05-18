@@ -3,7 +3,7 @@ package OGTSystem.service;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.entity.UserSafeInfoEntity;
 import OGTSystem.entity.WsServerInfoEntity;
-import OGTSystem.util.LocalhostTrueIpAddressInitializer;
+import OGTSystem.util.OgtSystemInitializer;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.HttpPost;

@@ -91,14 +91,14 @@ public class AdminController {
     }
 
 
-    @CrossOrigin
-    @PostMapping("/editUserInfo")
-    @ResponseStatus(HttpStatus.OK)
-    public void editUserInfo(
-            @RequestBody UserInfoEditEntity userinfoeditentity
-    ){
-        adminservice.editUserInfo(userinfoeditentity);
-    }
+        @CrossOrigin
+        @PostMapping("/editUserInfo")
+        @ResponseStatus(HttpStatus.OK)
+        public void editUserInfo(
+                @RequestBody UserInfoEditEntity userinfoeditentity
+        ){
+            adminservice.editUserInfo(userinfoeditentity);
+        }
 
 
     @CrossOrigin

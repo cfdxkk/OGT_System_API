@@ -3,7 +3,7 @@ package OGTSystem.controller;
 import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserInfoService;
-import OGTSystem.util.LocalhostTrueIpAddressInitializer;
+import OGTSystem.util.OgtSystemInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
@@ -47,7 +47,7 @@ public class WebSocketMessagePushController {
         if ("".equals(uuidFrom) || ("".equals(uuidTo) && uunoTo == null) || "".equals(token) || "".equals(messageType) || "".equals(message)){
             // 获取当前服务器的IP地址
             String localhostIpAddress = "";
-            localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
+            localhostIpAddress = OgtSystemInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
             System.out.println("消息发送失败[传输的参数不足]" + localhostIpAddress);
             return "消息发送失败[传输的参数不足]-" + localhostIpAddress;
         } else {
@@ -63,7 +63,7 @@ public class WebSocketMessagePushController {
                     } else {
                         // 获取当前服务器的IP地址
                         String localhostIpAddress = "";
-                        localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
+                        localhostIpAddress = OgtSystemInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
                         System.out.println("消息发送失败[用户NO错误]" + localhostIpAddress);
                         return "消息发送失败[用户NO错误]-" + localhostIpAddress;
                     }
@@ -85,7 +85,7 @@ public class WebSocketMessagePushController {
 
                     // 获取当前服务器的IP地址
                     String localhostIpAddress = "";
-                    localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
+                    localhostIpAddress = OgtSystemInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
 
                     return "消息发送成功-" + localhostIpAddress;
                 }
@@ -99,7 +99,7 @@ public class WebSocketMessagePushController {
 
         // 获取当前服务器的IP地址
         String localhostIpAddress = "";
-        localhostIpAddress = LocalhostTrueIpAddressInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
+        localhostIpAddress = OgtSystemInitializer.LOCAL_HOST_TRUE_IP_ADDRESS;
 
         return "消息发送失败[未知原因]-" + localhostIpAddress;
     }

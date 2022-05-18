@@ -5,7 +5,7 @@ import OGTSystem.entity.UserInfoEntity;
 import OGTSystem.service.UserAuthService;
 import OGTSystem.service.UserInfoService;
 import OGTSystem.service.WsP2PMessageConcurrencyAndConvergenceService;
-import OGTSystem.util.LocalhostTrueIpAddressInitializer;
+import OGTSystem.util.OgtSystemInitializer;
 import OGTSystem.vo.P2PMessageVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
