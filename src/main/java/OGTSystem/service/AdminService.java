@@ -109,11 +109,15 @@ public class AdminService {
 
     public void editUserInfo(UserInfoEditEntity userinfoeditentity) {
         if (this.adminAuthCheck(userinfoeditentity.getAdminUserId(), userinfoeditentity.getAdminToken())) {
-            if(
-                    "".equals(userinfoeditentity.getPassword())
-                            || "".equals(userinfoeditentity.getUserId())
-                            || "".equals(userinfoeditentity.getUsername())
-            ){
+//            if(
+//                    "".equals(userinfoeditentity.getPassword())
+//                            || "".equals(userinfoeditentity.getUserId())
+//                            || "".equals(userinfoeditentity.getUsername())
+//            ){
+//                return;
+//            }
+
+            if( "".equals(userinfoeditentity.getUserId()) ){
                 return;
             }
             userinforepository.setUserInfoInUserNotOftenEdit(userinfoeditentity);
