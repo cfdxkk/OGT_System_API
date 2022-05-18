@@ -16,3 +16,4 @@ target/test-classes/org/example/AppTest.class
 
 target/
 .idea/
+src/main/resources/application.yml
